@@ -61,7 +61,7 @@ export const HomeScreen = ({ navigation }) => {
                             fontFamily: myFonts.heading,
                             alignSelf: 'center',
 
-                        }]}>Food<Text style={{ color: myColors.primaryT }}>app</Text></Text>
+                        }]}>Foodapp<Text style={{ color: myColors.primaryT }}> Chef</Text> </Text>
 
                         <Spacer paddingT={myHeight(1.5)} />
                         {/* Search */}
@@ -84,10 +84,7 @@ export const HomeScreen = ({ navigation }) => {
                             }]}>Search dishes, restaurants</Text>
                         </TouchableOpacity>
 
-                        <Spacer paddingT={myHeight(3)} />
 
-                        {/* Banner */}
-                        <Banners />
 
                         <Spacer paddingT={myHeight(2.5)} />
                         {/* CAtegories*/}
@@ -160,102 +157,6 @@ export const HomeScreen = ({ navigation }) => {
                             </ScrollView>
 
                         </View>
-
-                        <Spacer paddingT={myHeight(3)} />
-                        {/* New Arrival  Complete*/}
-                        <View>
-                            {/* New Arrivals*/}
-                            <View style={{ paddingHorizontal: myWidth(4), alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Text style={[styles.textCommon, {
-                                    fontSize: myFontSize.xxBody,
-                                    fontFamily: myFonts.bodyBold,
-                                }]}>New Arrivals</Text>
-
-                                {/* See all */}
-                                <TouchableOpacity style={{
-                                    flexDirection: 'row', alignItems: 'center', paddingVertical: myHeight(0.4),
-                                    paddingStart: myWidth(2)
-                                }} activeOpacity={0.6} onPress={() => navigation.navigate('RestaurantAll', { name: 'New Arrivals', restaurants: Restaurants })}>
-
-                                    <Text
-                                        style={[styles.textCommon, {
-                                            fontSize: myFontSize.body2,
-                                            fontFamily: myFonts.bodyBold,
-                                            color: myColors.primaryT
-                                        }]}>See All</Text>
-                                    <Image style={{
-                                        height: myHeight(1.5), width: myHeight(1.5), marginStart: myWidth(1),
-                                        resizeMode: 'contain', tintColor: myColors.primaryT
-                                    }} source={require('../assets/home_main/home/go.png')} />
-                                </TouchableOpacity>
-                            </View>
-
-                            <Spacer paddingT={myHeight(1.3)} />
-                            {/* Restuarant */}
-                            <ScrollView horizontal showsHorizontalScrollIndicator={false}
-                                contentContainerStyle={{ paddingHorizontal: myWidth(4) }}>
-                                <View style={{
-                                    flexDirection: 'row',
-                                }}>
-                                    {Restaurants.map((item, i) =>
-                                        <TouchableOpacity key={i} activeOpacity={0.95}
-                                            onPress={() => navigation.navigate('RestaurantDetail', { item })} >
-                                            <RestaurantInfo restaurant={item} />
-                                        </TouchableOpacity>
-                                    )}
-                                </View>
-
-                            </ScrollView>
-                        </View>
-
-                        <Spacer paddingT={myHeight(3)} />
-                        {/*Nearby Restaurants  Complete*/}
-                        <View>
-                            {/* Nearby Restaurants*/}
-                            <View style={{ paddingHorizontal: myWidth(4), alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Text style={[styles.textCommon, {
-                                    fontSize: myFontSize.xxBody,
-                                    fontFamily: myFonts.bodyBold,
-                                }]}>Nearby Restaurants</Text>
-
-                                <TouchableOpacity style={{
-                                    flexDirection: 'row', alignItems: 'center', paddingVertical: myHeight(0.4),
-                                    paddingStart: myWidth(2)
-                                }} activeOpacity={0.6} onPress={() => navigation.navigate('RestaurantAll', { name: 'Nearby Restaurants', restaurants: Restaurants })}>
-
-                                    <Text
-                                        style={[styles.textCommon, {
-                                            fontSize: myFontSize.body2,
-                                            fontFamily: myFonts.bodyBold,
-                                            color: myColors.primaryT
-                                        }]}>See All</Text>
-                                    <Image style={{
-                                        height: myHeight(1.5), width: myHeight(1.5), marginStart: myWidth(1),
-                                        resizeMode: 'contain', tintColor: myColors.primaryT
-                                    }} source={require('../assets/home_main/home/go.png')} />
-                                </TouchableOpacity>
-                            </View>
-
-                            <Spacer paddingT={myHeight(1.3)} />
-                            {/* Restuarant */}
-                            <ScrollView horizontal showsHorizontalScrollIndicator={false}
-                                contentContainerStyle={{ paddingHorizontal: myWidth(4) }}>
-                                <View style={{
-                                    flexDirection: 'row',
-                                }}>
-                                    {Restaurants.map((item, i) =>
-                                        <TouchableOpacity key={i} activeOpacity={0.95}
-                                            onPress={() => navigation.navigate('RestaurantDetail', { item })} >
-                                            <RestaurantInfo restaurant={item} />
-                                        </TouchableOpacity>
-                                    )}
-                                </View>
-
-                            </ScrollView>
-                        </View>
-
-
-                        <Spacer paddingT={myHeight(4)} />
                     </ScrollView>
             }
 

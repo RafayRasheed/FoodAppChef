@@ -7,7 +7,6 @@ import { myFontSize, myFonts, myLetSpacing } from "../../ultils/myFonts";
 import { ActivityScreen } from "../activity/activity_screen";
 import { HomeNavigator } from "./home_navigator";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
-import { CartNavigator } from "../cart/cart_navigator";
 import { createStackNavigator } from "@react-navigation/stack"
 import { deleteLogin } from "../functions/storageMMKV";
 import { useSelector } from "react-redux";
@@ -23,16 +22,6 @@ const Icons = {
     ORDERS: {
         image: require('../assets/home_main/home/navigator/orderIcon.png'),
         style: { width: myHeight(2.9), height: myHeight(2.9) }
-    },
-    HOT: {
-        image: require('../assets/home_main/home/navigator/fire.png'),
-        style: { width: myHeight(3.8), height: myHeight(3.8) }
-    },
-
-    // WALLET: require('../assets/home_main/navigator/wallet.png'),
-    CART: {
-        image: require('../assets/home_main/home/navigator/cart.png'),
-        style: { width: myWidth(5.5), height: myHeight(2.68) }
     },
     PROFILE: {
         image: require('../assets/home_main/home/navigator/account.png'),
@@ -58,19 +47,8 @@ const screenOptions = ({ navigator, route }) => {
         tabBarInactiveTintColor: myColors.text,
         // tabBarShowLabel:name=='HOT'?true:false,
         tabBarIcon: ({ color }) => {
-            if (name == 'HOT') {
-                return (
-                    <View style={{
-                        padding: myHeight(2), backgroundColor: color == myColors.primaryT ? myColors.primaryL3 : myColors.primaryL5, borderWidth: myHeight(0.1), borderColor: myColors.offColor7,
-                        borderRadius: myHeight(10), elevation: 3,
-                        marginTop: -myHeight(7.5)
-                    }}>
-                        <Image style={[Icons[name].style, { resizeMode: 'contain', }]}
-                            source={Icons[name].image} />
-                    </View>
-                )
-            }
-            if (name == 'CART') {
+
+            if (name == 'ORDERS') {
                 return (
                     <View>
                         <Image style={[Icons[name].style, { tintColor: color, resizeMode: 'contain', }]}
@@ -130,8 +108,6 @@ export const HomeBottomNavigator = ({ route, navigation }) => {
             >
                 <Tab.Screen name="HOME" component={HomeNavigator} />
                 <Tab.Screen name="ORDERS" component={Xr} />
-                <Tab.Screen name="HOT" component={Xr} />
-                <Tab.Screen name="CART" component={CartNavigator} />
                 <Tab.Screen name="PROFILE" component={ProfileNavigator} />
 
             </Tab.Navigator>
