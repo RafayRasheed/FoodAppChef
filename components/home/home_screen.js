@@ -15,6 +15,7 @@ import firestore from '@react-native-firebase/firestore';
 import { setFavoriteItem, setFavoriteRest } from '../../redux/favorite_reducer';
 import { RestaurantInfoSkeleton } from '../common/skeletons';
 import { HomeSkeleton } from './home.component/home_skeleton';
+import storage from '@react-native-firebase/storage';
 
 if (!ios && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true)
@@ -28,23 +29,44 @@ export const HomeScreen = ({ navigation }) => {
     useEffect(() => {
         const profile = getLogin()
 
-        firestore().collection('users').doc(profile.uid).get()
-            .then((data) => {
-                const all = data.data()
-                const favoriteRes = all.favoriteRes
-                const favoriteItem = all.favoriteItem
+        // firestore().collection('users').doc(profile.uid).get()
+        //     .then((data) => {
+        //         const all = data.data()
+        //         const favoriteRes = all.favoriteRes
+        //         const favoriteItem = all.favoriteItem
 
-                if (favoriteRes && favoriteRes.length) {
-                    dispatch(setFavoriteRest(favoriteRes))
-                }
-                if (favoriteItem && favoriteItem.length) {
-                    dispatch(setFavoriteItem(favoriteItem))
-                }
-            })
-        dispatch(setCart(getCartLocal()))
+        //         if (favoriteRes && favoriteRes.length) {
+        //             dispatch(setFavoriteRest(favoriteRes))
+        //         }
+        //         if (favoriteItem && favoriteItem.length) {
+        //             dispatch(setFavoriteItem(favoriteItem))
+        //         }
+        //     }).catch(()=>{
+        //         console.log('Error while ge')
+        //     })
+        // dispatch(setCart(getCartLocal()))
         setTimeout(() => {
             setIsLoading(false)
         }, 2000)
+
+        const reference = storage().ref('categories')
+        reference.list().then(result => {
+            // Loop over each item
+
+            result.items.forEach(ref => {
+                ref.getDownloadURL().then((uri) => {
+
+                    console.log(uri)
+                }).catch((e) => {
+                    console.log('er', e)
+
+                })
+            });
+
+
+        }).catch((e) => {
+            console.log('Error', e)
+        });
     }, [])
     return (
 

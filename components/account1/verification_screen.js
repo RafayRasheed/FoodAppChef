@@ -94,7 +94,7 @@ export const Verification = ({ navigation, route }) => {
 
 
     function createAccount() {
-        firestore().collection('users').doc(profile.uid).set(profile)
+        firestore().collection('restaurants').doc(profile.uid).set(profile)
             .then(success => {
                 goToLogin()
             })

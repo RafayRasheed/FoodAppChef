@@ -72,7 +72,7 @@ export const CreateAcc = ({ navigate, showError, showLoading }) => {
         navigate('Verification', { code, profile, reset: false })
     }
     function sendEmail() {
-        const profile = new Person(uuid.v4(), name, email, encodeInfo(password), new Date(), 'customer')
+        const profile = new Person(uuid.v4(), name, email, encodeInfo(password), new Date(), 'restaurant')
         const code = verificationCode()
         sendVerficationEmail(profile, code)
             .then(success => {
@@ -88,7 +88,7 @@ export const CreateAcc = ({ navigate, showError, showLoading }) => {
 
     function onRegister() {
         showLoading(true)
-        firestore().collection('users')
+        firestore().collection('restaurants')
             .where('email', '==', email).get()
             .then(result => {
                 if (result.empty) {
@@ -118,10 +118,10 @@ export const CreateAcc = ({ navigate, showError, showLoading }) => {
             <View>
                 {/* Name Portion */}
                 <View>
-                    <Text style={[styles.heading, { color: name ? myColors.textL4 : myColors.text }]}>Full Name</Text>
+                    <Text style={[styles.heading, { color: name ? myColors.textL4 : myColors.text }]}>Restaurant Name</Text>
                     <View style={styles.containerInput}>
 
-                        <TextInput placeholder="Enter Your Full Name"
+                        <TextInput placeholder="Enter Your Restaurant Name"
                             placeholderTextColor={myColors.textL4}
                             // ={false}
                             autoCorrect={false}
@@ -171,7 +171,7 @@ export const CreateAcc = ({ navigate, showError, showLoading }) => {
                 <TouchableOpacity onPress={onVerifying}
                     activeOpacity={0.8}
                     style={[styles.button]}>
-                    <Text style={styles.textReg}>Registration</Text>
+                    <Text style={styles.textReg}>Register</Text>
                 </TouchableOpacity>
 
                 <Spacer paddingT={myHeight(1.2)} />

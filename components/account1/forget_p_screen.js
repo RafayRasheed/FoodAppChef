@@ -58,7 +58,7 @@ export const ForgetPassword = ({ navigation }) => {
     function onSubmit() {
         if (verifyEmail()) {
             setIsLoading(true)
-            firestore().collection('users')
+            firestore().collection('restaurants')
                 .where('email', '==', email).get()
                 .then(result => {
                     if (result.empty) {

@@ -93,7 +93,7 @@ export const Login = ({ navigation, showError, showLoading }) => {
 
     function checkUser() {
         showLoading(true)
-        firestore().collection('users')
+        firestore().collection('restaurants')
             .where('email', '==', email).get()
             .then(result => {
                 if (result.empty) {

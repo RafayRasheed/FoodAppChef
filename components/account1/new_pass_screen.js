@@ -38,7 +38,7 @@ export const NewPass = ({ navigation, route }) => {
 
     function changePassword() {
         setIsLoading(true)
-        firestore().collection('users').doc(profile.uid)
+        firestore().collection('restaurants').doc(profile.uid)
             .update({
                 password: encodeInfo(newPass),
             })
