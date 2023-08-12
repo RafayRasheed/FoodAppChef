@@ -9,6 +9,7 @@ export const CategoryFull = ({ navigation }) => {
     const [search, setSearch] = useState(null)
     const [filterList, setFilterList] = useState([])
 
+
     useEffect(() => {
         if (search) {
             const s = Categories.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))

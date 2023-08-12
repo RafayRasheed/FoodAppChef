@@ -9,6 +9,8 @@ import { Provider } from 'react-redux';
 import storeRedux from './redux/store_redux';
 import SplashScreen from 'react-native-splash-screen'
 import { getCartLocal } from './components/functions/storageMMKV';
+import firestore from '@react-native-firebase/firestore';
+
 // import { enableLatestRenderer } from 'react-native-maps';
 
 // enableLatestRenderer();

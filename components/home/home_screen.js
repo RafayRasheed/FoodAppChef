@@ -11,11 +11,11 @@ import { RestRating } from './rest_rating_screen';
 import { getCartLocal, getLogin } from '../functions/storageMMKV';
 import { setCart } from '../../redux/cart_reducer';
 import { useDispatch, useSelector } from 'react-redux';
-import firestore from '@react-native-firebase/firestore';
 import { setFavoriteItem, setFavoriteRest } from '../../redux/favorite_reducer';
 import { RestaurantInfoSkeleton } from '../common/skeletons';
 import { HomeSkeleton } from './home.component/home_skeleton';
 import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
 
 if (!ios && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true)
@@ -23,51 +23,54 @@ if (!ios && UIManager.setLayoutAnimationEnabledExperimental) {
 export const HomeScreen = ({ navigation }) => {
     const name = "Someone";
     const [isLoading, setIsLoading] = useState(true)
+    const [categories, setCategories] = useState(null)
 
     const dispatch = useDispatch()
+    function getCategories() {
+        let catArray = []
+        firestore().collection('categories').orderBy('count', 'desc').get().then((result) => {
+            if (!result.empty) {
+                result.forEach((cat) => {
+                    catArray.push(cat.data())
+                })
+                setCategories(catArray)
+
+            }
+            else {
+
+                setCategories(catArray)
+            }
+        }).catch((er) => {
+            console.log('Error on Get Category', er)
+        })
+    }
     // re.turn (<Test />)
     useEffect(() => {
         const profile = getLogin()
-
-        // firestore().collection('users').doc(profile.uid).get()
-        //     .then((data) => {
-        //         const all = data.data()
-        //         const favoriteRes = all.favoriteRes
-        //         const favoriteItem = all.favoriteItem
-
-        //         if (favoriteRes && favoriteRes.length) {
-        //             dispatch(setFavoriteRest(favoriteRes))
-        //         }
-        //         if (favoriteItem && favoriteItem.length) {
-        //             dispatch(setFavoriteItem(favoriteItem))
-        //         }
-        //     }).catch(()=>{
-        //         console.log('Error while ge')
-        //     })
-        // dispatch(setCart(getCartLocal()))
-        setTimeout(() => {
-            setIsLoading(false)
-        }, 2000)
-
-        const reference = storage().ref('categories')
-        reference.list().then(result => {
-            // Loop over each item
-
-            result.items.forEach(ref => {
-                ref.getDownloadURL().then((uri) => {
-
-                    console.log(uri)
-                }).catch((e) => {
-                    console.log('er', e)
-
-                })
-            });
-
-
-        }).catch((e) => {
-            console.log('Error', e)
-        });
+        getCategories()
     }, [])
+
+    // firestore().collection('users').doc(profile.uid).get()
+    //     .then((data) => {
+    //         const all = data.data()
+    //         const favoriteRes = all.favoriteRes
+    //         const favoriteItem = all.favoriteItem
+
+    //         if (favoriteRes && favoriteRes.length) {
+    //             dispatch(setFavoriteRest(favoriteRes))
+    //         }
+    //         if (favoriteItem && favoriteItem.length) {
+    //             dispatch(setFavoriteItem(favoriteItem))
+    //         }
+    //     }).catch(()=>{
+    //         console.log('Error while ge')
+    //     })
+    // dispatch(setCart(getCartLocal()))
+    useEffect(() => {
+        if (categories) {
+            setIsLoading(false)
+        }
+    }, [categories])
     return (
 
         <SafeAreaView style={styles.container}>
@@ -125,7 +128,7 @@ export const HomeScreen = ({ navigation }) => {
                                 <TouchableOpacity style={{
                                     flexDirection: 'row', alignItems: 'center', paddingVertical: myHeight(0.4),
                                     paddingStart: myWidth(2)
-                                }} activeOpacity={0.6} onPress={() => navigation.navigate('CategoryFull')}>
+                                }} activeOpacity={0.6} onPress={() => navigation.navigate('CategoryFull', { categories })}>
 
                                     <Text
                                         style={[styles.textCommon, {
@@ -144,7 +147,7 @@ export const HomeScreen = ({ navigation }) => {
                             <ScrollView horizontal showsHorizontalScrollIndicator={false}
                                 contentContainerStyle={{ paddingHorizontal: myWidth(1) }}>
 
-                                {Categories.slice(0, 4).map((item, i) =>
+                                {categories?.slice(0, 4).map((item, i) =>
 
                                     <View key={i} style={{ padding: myHeight(1.4), paddingEnd: myWidth(2) }}>
                                         <TouchableOpacity activeOpacity={0.8} style={{
@@ -158,11 +161,13 @@ export const HomeScreen = ({ navigation }) => {
                                                 backgroundColor: '#00000008',
                                                 // backgroundColor:myColors.background, 
                                                 alignItems: 'center', justifyContent: 'center'
-                                            }} >
+                                            }}>
+
                                                 <Image style={{
-                                                    maxHeight: myHeight(4.2), maxWidth: myHeight(4.2),
+                                                    height: myHeight(4.2), width: myHeight(4.2),
                                                     resizeMode: 'contain',
-                                                }} source={item.image} />
+                                                }}
+                                                    source={{ uri: item.image }} />
                                             </View>
 
                                             <Spacer paddingEnd={myWidth(2)} />
