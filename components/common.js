@@ -80,6 +80,7 @@ export const bottomTab = {
     height: myHeight(7.5),
     paddingBottom: ios ? myHeight(2.2) : myHeight(0.5),
     paddingTop: myHeight(2),
+    borderTopWidth: 1.5,
 }
 export const storage = new MMKV()
 

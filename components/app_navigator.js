@@ -12,6 +12,7 @@ import { ItemDetails } from "./home/item_detail_screen"
 import { Search } from "./home/search_screen"
 import { ItemSearch } from "./home/item_search_screen"
 import { RestaurantMoreDetails } from "./home/rest_more_info_screen"
+import { ProfileInfo } from "./profile/profile_info"
 
 const AppTAB = createStackNavigator()
 
@@ -36,6 +37,10 @@ export const AppNavigator = () => {
                 <AppTAB.Screen component={ItemDetails} name="ItemDetails" />
                 <AppTAB.Screen component={Search} name="Search" />
                 <AppTAB.Screen component={ItemSearch} name="ItemSearch" />
+
+
+                {/* PROFILE */}
+                <AppTAB.Screen component={ProfileInfo} name="ProfileInfo" />
 
             </AppTAB.Navigator>
         </NavigationContainer>

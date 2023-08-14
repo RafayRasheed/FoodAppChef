@@ -1,4 +1,4 @@
-package com.myfoodapp;
+package com.myfoodappchef;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

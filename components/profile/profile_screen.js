@@ -7,10 +7,17 @@ import {
 import { MyError, Spacer, StatusbarH, ios, myHeight, myWidth } from '../common';
 import { myColors } from '../../ultils/myColors';
 import { myFontSize, myFonts, myLetSpacing } from '../../ultils/myFonts';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteProfile } from '../../redux/profile_reducer';
 
 
 export const Profile = ({ navigation }) => {
-
+    const { profile } = useSelector(state => state.profile)
+    const dispatch = useDispatch()
+    function onLogout() {
+        dispatch(deleteProfile())
+        navigation.navigate('AccountNavigator')
+    }
     const Common = ({ navigate, iconSize, icon, tind = myColors.primaryT, name }) => (
         <View onPress={() => navigation.navigate(navigate)}
             style={{}}>
@@ -83,7 +90,7 @@ export const Profile = ({ navigation }) => {
                         flex: 1,
                         fontSize: myFontSize.medium,
                         fontFamily: myFonts.heading,
-                    }]}>Wali Muhammed</Text>
+                    }]}>{profile.name}</Text>
                 </View>
 
                 <Spacer paddingT={myHeight(2.5)} />
@@ -91,10 +98,10 @@ export const Profile = ({ navigation }) => {
                 <ScrollView bounces={false} contentContainerStyle={{ paddingHorizontal: myWidth(4), flexGrow: 1, }} >
 
                     {/* Profile */}
-                    <TouchableOpacity activeOpacity={0.7} onPress={() => null}
+                    <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('ProfileInfo')}
                         style={{}}>
                         <Common icon={require('../assets/profile/user.png')} iconSize={myHeight(2.6)}
-                            name={'Profile'} navigate={'ProfileDetails'}
+                            name={'Restaurant Info'}
                         />
 
                     </TouchableOpacity>
@@ -162,6 +169,22 @@ export const Profile = ({ navigation }) => {
                     {/* <View style={{ borderTopWidth: myHeight(0.18), borderColor: myColors.dot, }} /> */}
                 </ScrollView>
 
+
+                <TouchableOpacity onPress={onLogout}
+                    activeOpacity={0.8}
+                    style={{
+                        width: myWidth(92), alignSelf: 'center', paddingVertical: myHeight(1.2),
+                        borderRadius: myHeight(1.4), alignItems: 'center', justifyContent: 'center',
+                        flexDirection: 'row', backgroundColor: myColors.red,
+                        // borderWidth: myHeight(0.15), borderColor: myColors.primaryT
+                    }}>
+                    <Text style={[styles.textCommon, {
+                        fontFamily: myFonts.heading,
+                        fontSize: myFontSize.body4,
+                        color: myColors.background
+                    }]}>Logout</Text>
+                </TouchableOpacity>
+                <Spacer paddingT={myHeight(5)} />
             </SafeAreaView>
         </>
     )

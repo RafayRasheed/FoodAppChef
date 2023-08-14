@@ -1,4 +1,4 @@
-package com.myfoodapp;
+package com.myfoodappchef;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

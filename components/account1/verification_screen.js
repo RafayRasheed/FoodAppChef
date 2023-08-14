@@ -7,6 +7,8 @@ import firestore from '@react-native-firebase/firestore';
 import { setLogin } from "../functions/storageMMKV";
 import { sendVerficationEmail } from "../functions/email";
 import { verificationCode } from "../functions/functions";
+import { setProfile } from "../../redux/profile_reducer";
+import { useDispatch } from "react-redux";
 
 export const Verification = ({ navigation, route }) => {
     const { code, profile, reset } = route.params
@@ -27,6 +29,7 @@ export const Verification = ({ navigation, route }) => {
     const [minutes, setMinutes] = useState(0);
     const [seconds, setSeconds] = useState(30);
 
+    const dispatch = useDispatch()
 
 
 
@@ -82,7 +85,9 @@ export const Verification = ({ navigation, route }) => {
     }, [])
 
     function goToLogin() {
-        setLogin(profile)
+        dispatch(setProfile(profile))
+        // setLogin(profile)
+        // setLogin(profile)
         setIsLoading(false)
         navigation.replace("HomeBottomNavigator")
     }

@@ -6,12 +6,12 @@ import { myColors } from "../../../ultils/myColors";
 import { Person } from "../../functions/structures";
 import uuid from 'react-native-uuid';
 import RNSmtpMailer from "react-native-smtp-mailer";
-import { encodeInfo, verificationCode } from "../../functions/functions";
+import { dataFullData, encodeInfo, verificationCode } from "../../functions/functions";
 import firestore from '@react-native-firebase/firestore';
 import { sendVerficationEmail } from "../../functions/email";
 
 
-export const CreateAcc = ({ navigate, showError, showLoading }) => {
+export const CreateAcc = ({ navigate, showError, showLoading, city, setShowCityModal }) => {
     const [name, setName] = useState(null)
     // const [email, setEmail] = useState('shaheerkhan777.rr@gmail.com')
     const [email, setEmail] = useState(null)
@@ -62,8 +62,17 @@ export const CreateAcc = ({ navigate, showError, showLoading }) => {
         return false
     }
 
+    function verifyCity() {
+        if (city) {
+
+            return true
+
+        }
+        showError('Please Select a City')
+    }
+
     function onVerifying() {
-        if (verifyName() && verifyEmail() && verifyPass()) {
+        if (verifyName() && verifyEmail() && verifyPass() && verifyCity()) {
             onRegister()
         }
     }
@@ -72,7 +81,9 @@ export const CreateAcc = ({ navigate, showError, showLoading }) => {
         navigate('Verification', { code, profile, reset: false })
     }
     function sendEmail() {
-        const profile = new Person(uuid.v4(), name, email, encodeInfo(password), new Date(), 'restaurant')
+        const dateData = dataFullData()
+
+        const profile = new Person(uuid.v4(), name, email, city, encodeInfo(password), dateData.date, dateData.dateInt)
         const code = verificationCode()
         sendVerficationEmail(profile, code)
             .then(success => {
@@ -164,6 +175,30 @@ export const CreateAcc = ({ navigate, showError, showLoading }) => {
                                 source={hidePass ? require('../../assets/account/eyeC.png') : require('../../assets/account/eyeO.png')} />
                         </TouchableOpacity>
                     </View>
+                </View>
+                <Spacer paddingT={myHeight(0.98)} />
+                {/* city Portion */}
+                <View>
+                    <Text style={[styles.heading, { color: myColors.text }]}>City</Text>
+
+                    <TouchableOpacity activeOpacity={0.8} style={styles.containerInput} onPress={() => setShowCityModal(true)}>
+                        <View>
+                            <Image style={{
+                                height: myHeight(2.8),
+                                width: myHeight(2.8),
+                                paddingHorizontal: myWidth(4),
+                                resizeMode: 'contain',
+                            }}
+                                source={require('../../assets/account/flag.png')} />
+                        </View>
+                        <Spacer paddingEnd={myWidth(1)} />
+                        <TextInput placeholder="Select Your City"
+                            placeholderTextColor={myColors.textL4}
+                            style={styles.input} cursorColor={myColors.primary}
+                            value={city}
+                            editable={false}
+                        />
+                    </TouchableOpacity>
                 </View>
             </View>
             <View style={{ alignItems: 'center' }}>

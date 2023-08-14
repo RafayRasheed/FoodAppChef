@@ -46,7 +46,6 @@ export const HomeScreen = ({ navigation }) => {
     }
     // re.turn (<Test />)
     useEffect(() => {
-        const profile = getLogin()
         getCategories()
     }, [])
 

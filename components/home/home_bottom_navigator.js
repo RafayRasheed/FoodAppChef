@@ -4,13 +4,11 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Spacer, StatusbarH, bottomTab, ios, myHeight, myWidth, storage } from "../common";
 import { myColors } from "../../ultils/myColors";
 import { myFontSize, myFonts, myLetSpacing } from "../../ultils/myFonts";
-import { ActivityScreen } from "../activity/activity_screen";
 import { HomeNavigator } from "./home_navigator";
-import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack"
 import { deleteLogin } from "../functions/storageMMKV";
 import { useSelector } from "react-redux";
 import { ProfileNavigator } from "../profile/profile_navigator";
+import { Alert } from "../alert/alert_screen";
 
 const Tab = createBottomTabNavigator()
 
@@ -27,6 +25,10 @@ const Icons = {
         image: require('../assets/home_main/home/navigator/account.png'),
         style: { width: myWidth(6.2), height: myHeight(2.68) }
     },
+    ALERT: {
+        image: require('../assets/home_main/home/navigator/bell.png'),
+        style: { width: myHeight(3), height: myHeight(3) }
+    },
 }
 
 
@@ -37,7 +39,6 @@ const screenOptions = ({ navigator, route }) => {
         headerShown: false,
         tabBarStyle: bottomTab,
         tabBarLabelStyle: {
-            display: name == 'HOT' ? 'none' : 'flex',
             fontSize: myFontSize.xSmall,
             fontFamily: myFonts.bodyBold,
             letterSpacing: myLetSpacing.common,
@@ -108,6 +109,7 @@ export const HomeBottomNavigator = ({ route, navigation }) => {
             >
                 <Tab.Screen name="HOME" component={HomeNavigator} />
                 <Tab.Screen name="ORDERS" component={Xr} />
+                <Tab.Screen name="ALERT" component={Alert} />
                 <Tab.Screen name="PROFILE" component={ProfileNavigator} />
 
             </Tab.Navigator>
