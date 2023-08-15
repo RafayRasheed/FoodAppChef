@@ -74,12 +74,12 @@ export const Profile = ({ navigation }) => {
                         // backgroundColor: myColors.primaryL5, padding: myHeight(1.3),
                         // borderWidth: myWidth(0.1), borderColor: myColors.textL4, 
                     }}>
-                        <Image source={require('../assets/profile/profile.png')}
+                        <Image source={require('../assets/profile/rest.png')}
                             style={{
-                                width: myHeight(7.5),
-                                height: myHeight(7.5),
+                                width: myHeight(7.2),
+                                height: myHeight(7.2),
                                 resizeMode: 'contain',
-                                // tintColor: myColors.primaryT
+                                // tintColor: '#9e672f'
                             }}
                         />
 
@@ -97,10 +97,10 @@ export const Profile = ({ navigation }) => {
 
                 <ScrollView bounces={false} contentContainerStyle={{ paddingHorizontal: myWidth(4), flexGrow: 1, }} >
 
-                    {/* Profile */}
+                    {/* Restaurant info */}
                     <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('ProfileInfo')}
                         style={{}}>
-                        <Common icon={require('../assets/profile/user.png')} iconSize={myHeight(2.6)}
+                        <Common icon={require('../assets/profile/info.png')} iconSize={myHeight(2.6)}
                             name={'Restaurant Info'}
                         />
 
@@ -109,14 +109,13 @@ export const Profile = ({ navigation }) => {
                     <View style={{ borderTopWidth: myHeight(0.18), borderColor: myColors.dot, }} />
 
 
-
-                    {/* Favourites */}
-                    <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('Favourite')}
+                    {/* Restaurant Detail */}
+                    <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('RestaurantEdit')}
                         style={{}}>
-
-                        <Common icon={require('../assets/home_main/home/heart.png')} iconSize={myHeight(2.6)}
-                            name={'Favourites'} navigate={'Favourite'}
+                        <Common icon={require('../assets/profile/info.png')} iconSize={myHeight(2.6)}
+                            name={'Restaurant Details'}
                         />
+
                     </TouchableOpacity>
                     {/* Divider */}
                     <View style={{ borderTopWidth: myHeight(0.18), borderColor: myColors.dot, }} />

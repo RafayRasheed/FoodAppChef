@@ -83,7 +83,7 @@ export const CreateAcc = ({ navigate, showError, showLoading, city, setShowCityM
     function sendEmail() {
         const dateData = dataFullData()
 
-        const profile = new Person(uuid.v4(), name, email, city, encodeInfo(password), dateData.date, dateData.dateInt)
+        const profile = new Person(uuid.v4(), name, email, city, encodeInfo(password), dateData.date, dateData.dateInt, false)
         const code = verificationCode()
         sendVerficationEmail(profile, code)
             .then(success => {
