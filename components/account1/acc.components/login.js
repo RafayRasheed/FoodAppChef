@@ -26,21 +26,21 @@ export const Login = ({ navigation, showError, showLoading }) => {
 
         // })
 
-        //     const reference = storage().ref('images/restaurants/23456789')
-        //     reference.list().then(result => {
-        //         // Loop over each item
-        //         result.items.forEach(ref => {
-        //             ref.getDownloadURL().then((uri) => {
+        // const reference = storage().ref('images/restaurants/23456789')
+        // reference.list().then(result => {
+        //     // Loop over each item
+        //     result.items.forEach(ref => {
+        //         ref.getDownloadURL().then((uri) => {
 
-        //                 console.log(uri)
-        //             }).catch((e) => {
-        //                 console.log('er', e)
+        //             console.log(uri)
+        //         }).catch((e) => {
+        //             console.log('er', e)
 
-        //             })
-        //         });
-
-
+        //         })
         //     });
+
+
+        // });
 
     }, [])
 
