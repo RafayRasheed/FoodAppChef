@@ -18,6 +18,7 @@ import { ChangeImageView } from './profile_component/change_image_modal';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Clipboard from '@react-native-clipboard/clipboard'
 import { isValid } from 'js-base64';
+import { CalenderDate } from './profile_component/calender';
 
 export const RestaurantEdit = ({ navigation }) => {
 
@@ -35,7 +36,39 @@ export const RestaurantEdit = ({ navigation }) => {
     const [image, setImage] = useState(null);
     const [locLink, setLocLink] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null)
-
+    const [change, setChange] = useState(null)
+    const [time, setTime] = useState(null)
+    const [showTimeModal, setShowTimeModal] = useState(false)
+    const [timmings, setTimmings] = useState([
+        {
+            day: 'Mon',
+            open: true, startTime: '', startCurrent: null, endTime: '', endCurrent: null
+        },
+        {
+            day: 'Tue',
+            open: true, startTime: '', startCurrent: null, endTime: '', endCurrent: null
+        },
+        {
+            day: 'Wed',
+            open: true, startTime: '', startCurrent: null, endTime: '', endCurrent: null
+        },
+        {
+            day: 'Thu',
+            open: true, startTime: '', startCurrent: null, endTime: '', endCurrent: null
+        },
+        {
+            day: 'Fri',
+            open: true, startTime: '', startCurrent: null, endTime: '', endCurrent: null
+        },
+        {
+            day: 'Sat',
+            open: true, startTime: '', startCurrent: null, endTime: '', endCurrent: null
+        },
+        {
+            day: 'Sun',
+            open: true, startTime: '', startCurrent: null, endTime: '', endCurrent: null
+        },
+    ])
     useEffect(() => {
         if (errorMsg) {
             setTimeout(() => {
@@ -180,46 +213,160 @@ export const RestaurantEdit = ({ navigation }) => {
             return
         }
         verifyLink()
+    }
+
+    const TimingsCom = ({ i }) => {
+        const single = timmings[i]
+        return (
+            <View key={i} style={{ marginVertical: myHeight(1), flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Text style={[styles.textCommon,
+                {
+                    flex: 1,
+                    fontFamily: myFonts.body,
+                    fontSize: myFontSize.xxBody,
+                    color: myColors.text,
+                    marginTop: -myHeight(1)
+
+                }]}>{single.day}</Text>
 
 
+                {
+                    single.open &&
+
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+                        <TouchableOpacity activeOpacity={0.7} onPress={() => {
+                            setShowTimeModal({ i, start: true, current: single.startCurrent })
+                        }} style={{
+                            paddingVertical: myHeight(0.8), paddingHorizontal: myWidth(2),
+                            backgroundColor: myColors.offColor7, borderRadius: 7
+                        }}>
+                            <Text numberOfLines={1} style={[styles.textCommon,
+                            {
+                                fontFamily: myFonts.bodyBold,
+                                fontSize: myFontSize.body,
+                                minWidth: myFontSize.body + myWidth(13),
+                                textAlign: 'center',
+                                color: single.startTime ? myColors.text : myColors.textL4
+
+                            }]}>{single.startTime ? single.startTime : 'SELECT'}</Text>
+                        </TouchableOpacity>
+
+                        <Spacer paddingEnd={myWidth(1)} />
+                        <Text numberOfLines={1} style={[styles.textCommon,
+                        {
+                            fontFamily: myFonts.bodyBold,
+                            fontSize: myFontSize.body,
+
+                        }]}>-</Text>
+                        <Spacer paddingEnd={myWidth(1)} />
+
+                        <TouchableOpacity activeOpacity={0.7} onPress={() => {
+                            setShowTimeModal({ i, start: false, current: single.endCurrent })
+                        }} style={{
+
+                            paddingVertical: myHeight(0.8), paddingHorizontal: myWidth(2),
+                            backgroundColor: myColors.offColor7, borderRadius: 7
+                        }}>
+                            <Text numberOfLines={1} style={[styles.textCommon,
+                            {
+                                fontFamily: myFonts.bodyBold,
+                                fontSize: myFontSize.body,
+                                minWidth: myFontSize.body + myWidth(13),
+                                textAlign: 'center',
+                                color: single.endTime ? myColors.text : myColors.textL4
+
+                            }]}>{single.endTime ? single.endTime : 'SELECT'}</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                }
+
+
+                <Spacer paddingEnd={myWidth(4)} />
+
+                {/* Button */}
+                <TouchableOpacity activeOpacity={0.7}
+                    onPress={() => {
+                        const copy = timmings
+                        copy[i].open = !single.open
+
+                        setTimmings(copy)
+                        setChange(!change)
+
+
+                    }} style={{
+                        paddingVertical: myHeight(0.8), paddingHorizontal: myWidth(4),
+                        borderRadius: 5,
+                        backgroundColor: single.open ? myColors.primaryT : 'red',
+                    }}>
+                    <Text style={[styles.textCommon,
+                    {
+                        fontFamily: myFonts.body,
+                        fontSize: myFontSize.body,
+                        color: myColors.background
+
+                    }]}>{single.open ? 'Open' : 'Close'}</Text>
+
+                </TouchableOpacity>
+
+
+            </View>
+        )
+    }
+
+    function checkTime(val, date, content) {
+        console.log(val, date, content)
+        const copy = timmings
+        if (content.start) {
+            copy[content.i].startTime = val
+            copy[content.i].startCurrent = date
+
+        }
+        else {
+            copy[content.i].endTime = val
+            copy[content.i].endCurrent = date
+        }
+        setTimmings(copy)
+        setChange(!change)
     }
     return (
         <>
             <SafeAreaView style={{ flex: 1, backgroundColor: myColors.background }}>
                 <StatusbarH />
-                <KeyboardAwareScrollView>
-                    {/* Top */}
-                    <View>
-                        <Spacer paddingT={myHeight(1.5)} />
-                        <View style={{ paddingEnd: myWidth(4), flexDirection: 'row', alignItems: 'center' }}>
-                            {/* Search */}
+                {/* Top */}
+                <View>
+                    <Spacer paddingT={myHeight(1.5)} />
+                    <View style={{ paddingEnd: myWidth(4), flexDirection: 'row', alignItems: 'center' }}>
+                        {/* Search */}
 
-                            {/* Arrow */}
-                            <TouchableOpacity activeOpacity={0.7}
-                                onPress={() => navigation.goBack()} style={{ paddingHorizontal: myWidth(4), }}>
-                                <Image style={{
-                                    height: myHeight(2.4),
-                                    width: myHeight(2.4),
-                                    resizeMode: 'contain',
-                                    tintColor: myColors.textL0
-                                }} source={require('../assets/home_main/home/back.png')} />
-                            </TouchableOpacity>
-                            {/* <Spacer paddingEnd={myWidth(2.5)} /> */}
-                            <Text style={[styles.textCommon,
-                            {
-                                fontFamily: myFonts.heading,
-                                fontSize: myFontSize.xBody2
-                            }]}>
-                                Restautant Details
-                            </Text>
-                        </View>
-                        <Spacer paddingT={myHeight(1.5)} />
-
-                        <View style={{ height: myHeight(0.6), backgroundColor: myColors.divider }} />
+                        {/* Arrow */}
+                        <TouchableOpacity activeOpacity={0.7}
+                            onPress={() => navigation.goBack()} style={{ paddingHorizontal: myWidth(4), }}>
+                            <Image style={{
+                                height: myHeight(2.4),
+                                width: myHeight(2.4),
+                                resizeMode: 'contain',
+                                tintColor: myColors.textL0
+                            }} source={require('../assets/home_main/home/back.png')} />
+                        </TouchableOpacity>
+                        {/* <Spacer paddingEnd={myWidth(2.5)} /> */}
+                        <Text style={[styles.textCommon,
+                        {
+                            fontFamily: myFonts.heading,
+                            fontSize: myFontSize.xBody2
+                        }]}>
+                            Restautant Details
+                        </Text>
                     </View>
                     <Spacer paddingT={myHeight(1.5)} />
 
+                    <View style={{ height: myHeight(0.6), backgroundColor: myColors.divider }} />
+                </View>
+                <KeyboardAwareScrollView>
+
                     <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: myWidth(4) }}>
+                        <Spacer paddingT={myHeight(1.5)} />
                         {/* Background Image */}
                         <TouchableOpacity activeOpacity={0.75} onPress={() => {
                             // if (image) {
@@ -364,11 +511,31 @@ export const RestaurantEdit = ({ navigation }) => {
                         </View>
 
 
+                        <Spacer paddingT={myHeight(2.5)} />
+                        {/* Timmings */}
+                        <View>
+                            <Text style={[styles.textCommon,
+                            {
+                                fontFamily: myFonts.heading,
+                                fontSize: myFontSize.xBody2,
+
+                            }]}>Timmings *</Text>
+                            <Spacer paddingT={myHeight(1)} />
+                            {
+                                timmings.map((item, i) =>
+                                    <TimingsCom item={item} i={i} />
+                                )
+                            }
+                        </View>
                     </ScrollView>
                 </KeyboardAwareScrollView>
                 {showChangeModal &&
 
                     <ChangeImageView onChange={onChangeImage} onView={onViewImage} onHide={setShowChangeModal} />
+                }
+                {
+                    showTimeModal &&
+                    <CalenderDate show={setShowTimeModal} content={showTimeModal} value={checkTime} />
                 }
                 {errorMsg && <MyError message={errorMsg} />}
 
