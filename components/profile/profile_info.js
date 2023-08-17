@@ -148,7 +148,7 @@ export const ProfileInfo = ({ navigation }) => {
                 </View>
 
                 <Spacer paddingT={myHeight(1.5)} />
-                <View style={{ height: myHeight(0.5), width: myWidth(100), marginStart: -myWidth(4), backgroundColor: myColors.divider }} />
+                <View style={{ height: myHeight(0.5), width: myWidth(100), backgroundColor: myColors.divider }} />
 
                 {/* <View style={{ height: myHeight(0.6), backgroundColor: myColors.divider }} /> */}
             </View>
