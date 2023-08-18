@@ -181,7 +181,6 @@ export const RestaurantEdit = ({ navigation }) => {
             else if (callback.errorCode) {
                 console.log('errorCode')
             }
-
         });
 
 
