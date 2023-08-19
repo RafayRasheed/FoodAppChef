@@ -16,12 +16,15 @@ import { RestaurantInfoSkeleton } from '../common/skeletons';
 import { HomeSkeleton } from './home.component/home_skeleton';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
+import { RestaurantInfoFull } from './home.component/restaurant_info_full';
 
 if (!ios && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true)
 }
 export const HomeScreen = ({ navigation }) => {
     const name = "Someone";
+    const { profile } = useSelector(state => state.profile)
+
     const [isLoading, setIsLoading] = useState(true)
     const [categories, setCategories] = useState(null)
 
@@ -87,9 +90,9 @@ export const HomeScreen = ({ navigation }) => {
 
                         }]}>Foodapp<Text style={{ color: myColors.primaryT }}> Chef</Text> </Text>
 
-                        <Spacer paddingT={myHeight(1.5)} />
+                        <Spacer paddingT={myHeight(3)} />
                         {/* Search */}
-                        <TouchableOpacity activeOpacity={0.8} style={{
+                        {/* <TouchableOpacity activeOpacity={0.8} style={{
                             flexDirection: 'row', alignItems: 'center', width: myWidth(85),
                             backgroundColor: myColors.divider, alignSelf: 'center', paddingVertical: myHeight(1.3),
                             borderRadius: myWidth(2.5)
@@ -106,9 +109,51 @@ export const HomeScreen = ({ navigation }) => {
                                 fontFamily: myFonts.bodyBold,
                                 color: myColors.offColor
                             }]}>Search dishes, restaurants</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
+
+                        <Text style={[styles.textCommon, {
+                            fontSize: myFontSize.xxBody,
+                            fontFamily: myFonts.bodyBold,
+                            paddingStart: myWidth(4)
+                        }]}>Your Restaurant</Text>
+                        <Spacer paddingT={myHeight(1.5)} />
+
+                        {
+                            profile.update ?
+                                <TouchableOpacity activeOpacity={0.9} onPress={() => {
+                                    navigation.navigate('RestaurantDetail')
+
+                                }} >
+
+                                    <RestaurantInfoFull restaurant={profile} navigate={navigation.navigate} />
+                                </TouchableOpacity>
+                                :
+                                <TouchableOpacity
+                                    activeOpacity={0.75} onPress={() => {
+                                        navigation.navigate('RestaurantEdit')
+
+                                    }} style={{
+                                        marginHorizontal: myWidth(4),
+                                        height: myHeight(20), justifyContent: 'center', alignItems: 'center',
+                                        borderRadius: myWidth(4), backgroundColor: myColors.offColor7
+                                    }}>
 
 
+
+                                    <Text style={[styles.textCommon,
+                                    {
+                                        fontFamily: myFonts.body,
+                                        fontSize: myFontSize.body4,
+                                        textAlign: 'center'
+
+                                    }]}>
+                                        Add Restaurant Details {'\n'}For Publish
+                                    </Text>
+
+
+
+                                </TouchableOpacity>
+                        }
 
                         <Spacer paddingT={myHeight(2.5)} />
                         {/* CAtegories*/}

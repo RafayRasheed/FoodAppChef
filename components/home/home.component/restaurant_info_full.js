@@ -5,28 +5,12 @@ import { myFontSize, myFonts, myLetSpacing } from "../../../ultils/myFonts"
 import { myColors } from "../../../ultils/myColors"
 import { useDispatch, useSelector } from 'react-redux'
 import { addFavoriteRest, removeFavoriteRest } from '../../../redux/favorite_reducer'
-export const RestaurantInfoFull = ({ restaurant }) => {
-    const { favoriteRestuarnt } = useSelector(state => state.favorite)
-    const dispatch = useDispatch()
-
-    const checkFav = favoriteRestuarnt.find(redID => redID == restaurant.id)
-    const [isFav, setIsFav] = useState(checkFav != null)
-
-    function changeFav() {
-        if (!isFav) {
-            dispatch(addFavoriteRest({ resId: restaurant.id }))
-        } else {
-            dispatch(removeFavoriteRest({ resId: restaurant.id }))
-        }
-        setIsFav(!isFav)
-    }
-    useEffect(() => {
-        setIsFav(checkFav != null)
-    }, [checkFav])
+import { ImageUri } from '../../common/image_uri'
+export const RestaurantInfoFull = ({ restaurant, navigate }) => {
 
 
     return (
-        <View style={{ paddingVertical: myHeight(1.5) }}>
+        <View style={{}}>
             <View style={styles.container}>
                 {/* Image & Others*/}
 
@@ -38,7 +22,7 @@ export const RestaurantInfoFull = ({ restaurant }) => {
                     borderTopRightRadius: myWidth(3.5),
                     borderTopLeftRadius: myWidth(3.5),
                     overflow: 'hidden'
-                }} source={restaurant.images[0]}>
+                }} source={{ uri: restaurant.images[0] }}>
 
 
                     <Spacer paddingT={myHeight(0.8)} />
@@ -61,15 +45,16 @@ export const RestaurantInfoFull = ({ restaurant }) => {
                             }
                         </View>
 
-                        {/* Heart */}
                         <TouchableOpacity activeOpacity={0.85}
-                            onPress={changeFav}
+                            onPress={(() => navigate('RestaurantEdit'))}
                             style={styles.containerHeart}>
                             {/* <Text style={styles.textRating}>Dill</Text> */}
                             <Image style={styles.imageHeart}
 
-                                source={isFav ? require('../../assets/home_main/home/heart.png') : require('../../assets/home_main/home/heart_o.png')} />
+                                source={require('../../assets/home_main/home/edit.png')} />
                         </TouchableOpacity>
+
+
                     </View>
 
                 </ImageBackground>
@@ -78,7 +63,7 @@ export const RestaurantInfoFull = ({ restaurant }) => {
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     {/* Icon */}
                     <View style={styles.containerIcon}>
-                        <Image style={styles.imageIcon} source={restaurant.icon} />
+                        <Image style={styles.imageIcon} source={{ uri: restaurant.icon }} />
                     </View>
 
 
@@ -207,9 +192,9 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
         backgroundColor: myColors.background,
         padding: myHeight(0.8),
-        borderRadius: myWidth(5),
+        borderRadius: myWidth(1),
         marginVertical: myHeight(0.5),
-        marginHorizontal: myWidth(2)
+        marginHorizontal: myWidth(2.5)
     },
     containerImageEffect: {
         height: myHeight(13), top: 0,
@@ -284,7 +269,7 @@ const styles = StyleSheet.create({
         height: myHeight(7),
         width: myHeight(7),
         borderRadius: myHeight(4),
-        resizeMode: 'contain',
+        resizeMode: 'cover',
         borderWidth: myHeight(0.2),
         borderColor: myColors.background,
     },
@@ -300,10 +285,9 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
     },
     imageHeart: {
-        height: myHeight(2.6),
-        width: myHeight(2.6),
+        height: myHeight(2.3),
+        width: myHeight(2.3),
         resizeMode: 'contain',
-        tintColor: myColors.red,
     },
     imageLoc: {
         width: myHeight(2.2), height: myHeight(2.2),

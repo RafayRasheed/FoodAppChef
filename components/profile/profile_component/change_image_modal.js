@@ -7,7 +7,7 @@ import { offers } from "../home_data";
 import LinearGradient from "react-native-linear-gradient";
 import Animated, { SlideInDown, SlideOutDown } from "react-native-reanimated";
 
-export const ChangeImageView = ({ onChange, onView, onHide }) => {
+export const ChangeImageView = ({ onChange, onView, onRemove, onHide }) => {
 
 
     return (
@@ -26,7 +26,7 @@ export const ChangeImageView = ({ onChange, onView, onHide }) => {
                 <Spacer paddingT={myHeight(3)} />
 
                 <TouchableOpacity style={{}} activeOpacity={0.75} onPress={() => {
-                    onView()
+                    onRemove()
                     onHide()
                 }}>
                     <Text style={[styles.textCommon,
@@ -34,7 +34,7 @@ export const ChangeImageView = ({ onChange, onView, onHide }) => {
                         fontFamily: myFonts.bodyBold,
                         fontSize: myFontSize.medium2,
 
-                    }]}> View </Text>
+                    }]}> Remove </Text>
                 </TouchableOpacity>
 
                 <Spacer paddingT={myHeight(1.5)} />

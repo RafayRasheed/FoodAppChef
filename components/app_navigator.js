@@ -14,6 +14,8 @@ import { ItemSearch } from "./home/item_search_screen"
 import { RestaurantMoreDetails } from "./home/rest_more_info_screen"
 import { ProfileInfo } from "./profile/profile_info"
 import { RestaurantEdit } from "./profile/restaurant_edit"
+import { RestaurantDetail } from "./home/restaurant_detail_screen"
+import { ItemEdit } from "./profile/item_edit"
 
 const AppTAB = createStackNavigator()
 
@@ -34,6 +36,7 @@ export const AppNavigator = () => {
                 <AppTAB.Screen component={ImageViewer} name="ImageViewer" />
 
                 {/* Home */}
+                <AppTAB.Screen component={RestaurantDetail} name="RestaurantDetail" />
                 <AppTAB.Screen component={RestaurantMoreDetails} name="RestaurantMoreDetails" />
                 <AppTAB.Screen component={ItemDetails} name="ItemDetails" />
                 <AppTAB.Screen component={Search} name="Search" />
@@ -43,6 +46,7 @@ export const AppNavigator = () => {
                 {/* PROFILE */}
                 <AppTAB.Screen component={ProfileInfo} name="ProfileInfo" />
                 <AppTAB.Screen component={RestaurantEdit} name="RestaurantEdit" />
+                <AppTAB.Screen component={ItemEdit} name="ItemEdit" />
 
             </AppTAB.Navigator>
         </NavigationContainer>

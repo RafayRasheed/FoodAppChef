@@ -9,6 +9,7 @@ import { myColors } from '../../ultils/myColors';
 import { myFontSize, myFonts, myLetSpacing } from '../../ultils/myFonts';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteProfile } from '../../redux/profile_reducer';
+import { ImageUri } from '../common/image_uri';
 
 
 export const Profile = ({ navigation }) => {
@@ -74,14 +75,21 @@ export const Profile = ({ navigation }) => {
                         // backgroundColor: myColors.primaryL5, padding: myHeight(1.3),
                         // borderWidth: myWidth(0.1), borderColor: myColors.textL4, 
                     }}>
-                        <Image source={require('../assets/profile/rest.png')}
-                            style={{
-                                width: myHeight(7.2),
-                                height: myHeight(7.2),
-                                resizeMode: 'contain',
-                                // tintColor: '#9e672f'
-                            }}
-                        />
+                        {
+                            profile.icon ?
+                                <ImageUri width={myHeight(7.2)}
+                                    height={myHeight(7.2)}
+                                    resizeMode={'cover'} uri={profile.icon} />
+                                :
+                                <Image source={require('../assets/profile/rest.png')}
+                                    style={{
+                                        width: myHeight(7.2),
+                                        height: myHeight(7.2),
+                                        resizeMode: 'contain',
+                                        // tintColor: '#9e672f'
+                                    }}
+                                />
+                        }
 
                     </View>
                     <Spacer paddingEnd={myWidth(4)} />

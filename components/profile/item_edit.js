@@ -16,10 +16,12 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { launchImageLibrary } from 'react-native-image-picker';
 import storage from '@react-native-firebase/storage';
 import { ImageUri } from '../common/image_uri';
+import uuid from 'react-native-uuid';
 
 
-export const ProfileInfo = ({ navigation }) => {
+export const ItemEdit = ({ navigation, route }) => {
     const { profile } = useSelector(state => state.profile)
+    const { item } = route.params
     const pass = (deccodeInfo(profile.password))
     const [isLoading, setIsLoading] = useState(false)
 
@@ -30,8 +32,9 @@ export const ProfileInfo = ({ navigation }) => {
     const [errorMsg, setErrorMsg] = useState(null)
     const [city, setCity] = useState(profile.city)
     const [showCityModal, setShowCityModal] = useState(false)
-    const [image, setImage] = useState(profile.icon);
+    const [image, setImage] = useState(item.image ? item.image : null);
     const [imageLoading, setImageLoading] = useState(null)
+    const id = item.id ? item.id : uuid.v4()
 
 
     const disptach = useDispatch()
@@ -98,14 +101,7 @@ export const ProfileInfo = ({ navigation }) => {
     }
 
     function goToDone() {
-        const updaProfile = {
-            ...profile,
-            name: name,
-            password: encodeInfo(password),
-            city: city,
-            icon: image,
-        }
-        disptach(setProfile(updaProfile))
+
         setIsEditMode(false)
         setIsLoading(false)
         Alert.alert('Updated Successfully')
@@ -158,7 +154,7 @@ export const ProfileInfo = ({ navigation }) => {
                 const source = asset.uri
                 if (sizeKB <= 0.3) {
                     setImageLoading(true)
-                    uploadImage(source, 'icon')
+                    uploadImage(source, id)
 
                 }
                 else {
@@ -238,7 +234,7 @@ export const ProfileInfo = ({ navigation }) => {
                     {
                         fontFamily: myFonts.heading,
                         fontSize: myFontSize.xBody2
-                    }]}>Restaurant Info </Text>
+                    }]}>Item Info </Text>
                 </View>
 
                 <Spacer paddingT={myHeight(1.5)} />
@@ -255,15 +251,13 @@ export const ProfileInfo = ({ navigation }) => {
                 {/* Background Image */}
                 <TouchableOpacity disabled={imageLoading || !isEditMode}
                     activeOpacity={0.75} onPress={() => {
-
                         chooseFile()
-
 
                     }}
                     style={{
                         alignSelf: 'center',
-                        height: myHeight(20), width: myHeight(20), justifyContent: 'center', alignItems: 'center',
-                        borderRadius: myWidth(500), backgroundColor: myColors.offColor7, overflow: 'hidden'
+                        height: myHeight(20), width: '100%', justifyContent: 'center', alignItems: 'center',
+                        borderRadius: myWidth(2), backgroundColor: myColors.offColor7, overflow: 'hidden'
                     }}>
                     {
                         imageLoading ?
@@ -288,17 +282,17 @@ export const ProfileInfo = ({ navigation }) => {
                                     <Text style={[styles.textCommon,
                                     {
                                         fontFamily: myFonts.body,
-                                        fontSize: myFontSize.body,
+                                        fontSize: myFontSize.body4,
                                         textAlign: 'center',
 
 
                                     }]}>
-                                        Upload Icon
+                                        Upload Image
                                     </Text>
                                     <Text style={[styles.textCommon,
                                     {
                                         fontFamily: myFonts.body,
-                                        fontSize: myFontSize.small3,
+                                        fontSize: myFontSize.body,
                                         textAlign: 'center'
 
                                     }]}>
@@ -312,78 +306,6 @@ export const ProfileInfo = ({ navigation }) => {
 
                 <Spacer paddingT={myHeight(2.5)} />
 
-                {/* name Portion */}
-
-                <View>
-                    <Text style={[styles.heading, { color: myColors.text }]}>Restaurant Name</Text>
-                    <View style={[styles.containerInput, { borderColor: isEditMode ? myColors.primaryT : myColors.textL4 }]}>
-
-                        <TextInput placeholder="Full Name"
-                            placeholderTextColor={myColors.textL4}
-                            autoCorrect={false}
-                            editable={isEditMode}
-                            style={[styles.input,]} cursorColor={myColors.primary}
-                            value={name} onChangeText={setName}
-                        />
-                    </View>
-                </View>
-
-                <Spacer paddingT={myHeight(0.98)} />
-                {/* password Portion */}
-                <View>
-                    <Text style={[styles.heading, { color: myColors.text }]}>Password</Text>
-
-                    <View style={[styles.containerInput, { borderColor: isEditMode ? myColors.primaryT : myColors.textL4 }]}>
-
-                        <TextInput placeholder="Password"
-
-                            autoCorrect={false}
-                            editable={isEditMode}
-                            placeholderTextColor={myColors.textL4}
-                            style={styles.input} cursorColor={myColors.primary}
-                            value={password} onChangeText={setPass}
-                            secureTextEntry={hidePass}
-                            autoCapitalize='none'
-
-                        />
-                        <TouchableOpacity activeOpacity={0.6} onPress={() => setHidePass(!hidePass)}>
-                            <Image style={styles.imageEye}
-                                source={hidePass ? require('../assets/account/eyeC.png') : require('../assets/account/eyeO.png')} />
-                        </TouchableOpacity>
-                    </View>
-
-                </View>
-                <Spacer paddingT={myHeight(0.98)} />
-
-                {/* City */}
-                <View>
-                    <Text style={[styles.heading, { color: myColors.text }]}>City</Text>
-                    <TouchableOpacity activeOpacity={isEditMode ? 0.8 : 1} onPress={() => {
-                        if (isEditMode) {
-
-                            setShowCityModal(true)
-                        }
-                    }}
-                        style={[styles.containerInput, { borderColor: isEditMode ? myColors.primaryT : myColors.textL4 }]}>
-                        <View>
-                            <Image style={{
-                                height: myHeight(2.8),
-                                width: myHeight(2.8),
-                                paddingHorizontal: myWidth(4),
-                                resizeMode: 'contain',
-                            }}
-                                source={require('../assets/account/flag.png')} />
-                        </View>
-                        <Spacer paddingEnd={myWidth(1)} />
-                        <TextInput placeholder="Select Your City"
-                            placeholderTextColor={myColors.textL4}
-                            autoCorrect={false}
-                            editable={false}
-                            style={[styles.input,]} cursorColor={myColors.primary}
-                            value={city}
-                        />
-                    </TouchableOpacity>
-                </View>
 
             </KeyboardAwareScrollView>
 
@@ -400,7 +322,7 @@ export const ProfileInfo = ({ navigation }) => {
                     fontFamily: myFonts.heading,
                     fontSize: myFontSize.body3,
                     color: myColors.background
-                }]}>{isEditMode ? 'Save Info' : 'Edit Info'}</Text>
+                }]}>{isEditMode ? 'Save tem' : 'Edit Item'}</Text>
             </TouchableOpacity>
             <Spacer paddingT={myHeight(5)} />
 

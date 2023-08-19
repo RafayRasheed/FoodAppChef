@@ -13,8 +13,8 @@ import { addFavoriteRest, removeFavoriteRest } from '../../redux/favorite_reduce
 import { useFocusEffect } from '@react-navigation/native';
 
 export const RestaurantDetail = ({ navigation, route }) => {
-  const restaurant = route.params.item;
-  const backScreen = route.params.backScreen
+  const restaurant = useSelector(state => state.profile).profile
+
   const catRef = useRef(null)
   const { foodCategory } = restaurant;
   const [selectCat, setSelectCat] = useState(null);
@@ -22,27 +22,27 @@ export const RestaurantDetail = ({ navigation, route }) => {
 
   //Back Functions
 
-  const onBackPress = () => {
+  // const onBackPress = () => {
 
-    if (backScreen) {
-      navigation.navigate(backScreen, route.params.params)
-      return true
-    }
+  //   if (backScreen) {
+  //     navigation.navigate(backScreen, route.params.params)
+  //     return true
+  //   }
 
-    return false
-  };
-  useFocusEffect(
-    React.useCallback(() => {
+  //   return false
+  // };
+  // useFocusEffect(
+  //   React.useCallback(() => {
 
-      BackHandler.addEventListener(
-        'hardwareBackPress', onBackPress
-      );
-      return () =>
-        BackHandler.removeEventListener(
-          'hardwareBackPress', onBackPress
-        );
-    }, [backScreen])
-  );
+  //     BackHandler.addEventListener(
+  //       'hardwareBackPress', onBackPress
+  //     );
+  //     return () =>
+  //       BackHandler.removeEventListener(
+  //         'hardwareBackPress', onBackPress
+  //       );
+  //   }, [backScreen])
+  // );
   function doThos() {
 
     const url = "https://www.google.com/maps/place/Millennium+Mall/@24.9094679,67.0433966,13z/data=!3m1!5s0x3eb339223612bfc7:0xc67329732f68fc6e!4m6!3m5!1s0x3eb33922488f3725:0x3bfde63eb356ebc0!8m2!3d24.901187!4d67.1155004!16s%2Fg%2F11bv1cb635?entry=ttu";
@@ -66,30 +66,13 @@ export const RestaurantDetail = ({ navigation, route }) => {
   }
 
   function back() {
-    if (backScreen) {
-      navigation.navigate(backScreen, route.params.params)
-      return
-    }
+
     navigation.goBack()
   }
 
-  const { favoriteRestuarnt } = useSelector(state => state.favorite)
   const dispatch = useDispatch()
 
-  const checkFav = favoriteRestuarnt.find(redID => redID == restaurant.id)
-  const [isFav, setIsFav] = useState(checkFav != null)
 
-  function changeFav() {
-    if (!isFav) {
-      dispatch(addFavoriteRest({ resId: restaurant.id }))
-    } else {
-      dispatch(removeFavoriteRest({ resId: restaurant.id }))
-    }
-    setIsFav(!isFav)
-  }
-  useEffect(() => {
-    setIsFav(checkFav != null)
-  }, [checkFav])
   return (
     <View style={{ flex: 1, backgroundColor: myColors.background }}>
 
@@ -100,7 +83,7 @@ export const RestaurantDetail = ({ navigation, route }) => {
         borderBottomLeftRadius: myWidth(4),
         borderBottomRightRadius: myWidth(4),
         overflow: 'hidden',
-      }} source={restaurant?.images[0]}>
+      }} source={{ uri: restaurant.images[0] }}>
 
         {/* Back */}
         <TouchableOpacity
@@ -159,12 +142,12 @@ export const RestaurantDetail = ({ navigation, route }) => {
       {/* Content */}
       <View style={{}}>
         {/* Restuarant Info */}
-        <TouchableOpacity activeOpacity={0.96} onPress={() => navigation.navigate('RestaurantMoreDetails', { restaurant: restaurant })}
+        <TouchableOpacity activeOpacity={0.96} onPress={() => navigation.navigate('RestaurantMoreDetails')}
           style={{
             // height:'100%',
             //    position:'absolute', left:0,
             backgroundColor: myColors.background,
-            marginTop: -myHeight(3),
+            marginTop: -myHeight(5),
             borderRadius: myHeight(3),
             borderTopStartRadius: myHeight(3),
             borderTopEndRadius: myHeight(3),
@@ -179,17 +162,21 @@ export const RestaurantDetail = ({ navigation, route }) => {
             style={{
               width: myHeight(6.5),
               height: myHeight(6.5),
-              resizeMode: 'contain',
+              resizeMode: 'cover',
               borderRadius: myHeight(6),
               borderWidth: myHeight(0.15),
               marginTop: -myHeight(3),
               borderColor: myColors.primaryT,
               alignSelf: 'center',
             }}
-            source={restaurant.icon}
+            source={{ uri: restaurant.icon }}
           />
           {/* Heart */}
           <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('RestaurantEdit')
+
+            }}
             style={{
               backgroundColor: myColors.background,
               padding: myHeight(2.5),
@@ -199,15 +186,14 @@ export const RestaurantDetail = ({ navigation, route }) => {
               right: myWidth(0),
               position: 'absolute'
             }}
-            activeOpacity={0.8}
-            onPress={changeFav}>
+            activeOpacity={0.7}
+          >
             <Image style={{
-              height: myHeight(3),
-              width: myHeight(3),
+              height: myHeight(2.5),
+              width: myHeight(2.5),
               resizeMode: 'contain',
-              tintColor: myColors.red
             }}
-              source={isFav ? require('../assets/home_main/home/heart.png') : require('../assets/home_main/home/heart_o.png')} />
+              source={require('../assets/home_main/home/edit.png')} />
           </TouchableOpacity>
           <Spacer paddingT={myHeight(0.3)} />
           {/* name */}
@@ -348,14 +334,13 @@ export const RestaurantDetail = ({ navigation, route }) => {
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => {
-                  setSelectCat(null)
-                  setCurrentItems([])
+                  navigation.navigate('ItemEdit', { item: {} })
                 }}
                 style={{
                   alignItems: 'center',
                   justifyContent: 'center',
                   borderRadius: myHeight(15),
-                  backgroundColor: selectCat == null ? myColors.primaryL2 : myColors.background,
+                  backgroundColor: myColors.primaryT,
                   // backgroundColor:myColors.primaryL,
                   paddingVertical: myHeight(1.5),
                   paddingHorizontal: myWidth(4),
@@ -368,9 +353,10 @@ export const RestaurantDetail = ({ navigation, route }) => {
                     {
                       fontSize: myFontSize.body2,
                       fontFamily: myFonts.heading,
+                      color: myColors.background,
                     },
                   ]}>
-                  {'All'}
+                  {'Add Item'}
                 </Text>
                 <Spacer paddingEnd={myWidth(2.7)} />
               </TouchableOpacity>
