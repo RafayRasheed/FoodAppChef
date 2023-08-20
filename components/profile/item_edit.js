@@ -37,6 +37,7 @@ const dummy = [
 ]
 export const ItemEdit = ({ navigation, route }) => {
     const { profile } = useSelector(state => state.profile)
+    const { foodCategory } = profile
     const { item } = route.params
     const [isLoading, setIsLoading] = useState(false)
     const [isEditMode, setIsEditMode] = useState(false)
@@ -44,15 +45,17 @@ export const ItemEdit = ({ navigation, route }) => {
     const [image, setImage] = useState(item.image ? item.image : null);
     const [imageLoading, setImageLoading] = useState(null)
     const [name, setName] = useState(item.name ? item.name : null)
-    const [price, setPrice] = useState(item.price ? item.price : null)
+    const [price, setPrice] = useState(item.price ? item.price.toString() : null)
     const [newCat, setNewCat] = useState(null)
     const [selectCat, setSelectCat] = useState(item.catName ? item.catName : null)
-    const [selectSubCat, setSelectSubCat] = useState(item.catName ? item.catName : null)
+    const [selectSubCat, setSelectSubCat] = useState(item.subCatName ? item.subCatName : null)
     // const [resCategories, setResCategories] = useState(profile.categories ? profile.categories : [])
     const resCategories = profile.categories ? profile.categories : []
     const [subCategories, setSubCategories] = useState(profile.subCategories ? profile.subCategories : [])
     const [addCategory, setAddCategory] = useState(false)
+    const [addOption, setAddOption] = useState(false)
     const id = item.id ? item.id : uuid.v4()
+    const [change, setChange] = useState(null)
 
     const { mainCategories } = useSelector(state => state.mainCategories)
 
@@ -60,13 +63,21 @@ export const ItemEdit = ({ navigation, route }) => {
 
     const [Description, SetDescription] = useState(item.description)
 
-    const [options, setOptios] = useState(item.options ? [...item.options] : [...dummy])
+    const [options, setOptios] = useState(item.options ? [...item.options] : [])
+    const [optionSelect, setOptionSelect] = useState({
+
+        required: false,
+        name: '',
+        list: ['', '']
+    })
+
 
 
     const disptach = useDispatch()
 
 
     useEffect(() => {
+
         if (errorMsg) {
             setTimeout(() => {
                 setIsLoading(false)
@@ -77,79 +88,208 @@ export const ItemEdit = ({ navigation, route }) => {
     }, [errorMsg])
 
 
-    function verifyName() {
-        if (name) {
-            if (name.length > 2) {
-                return true
-            }
-            setErrorMsg('Name is too Short')
-            return false
-        }
-        setErrorMsg('Please Enter a Name')
-        return false
-    }
-    function verifyPass() {
-        if (password) {
-            if (password.length > 5) {
-                return true
-            }
-            setErrorMsg('Password must be at least 6 character')
-            return false
-        }
-        setErrorMsg('Please Enter a Password')
-        return false
-    }
 
-    function checking() {
-        if (isEditMode) {
-
-            if (profile.name == name && pass == password && city == profile.city && profile.icon == image) {
-                setIsEditMode(false)
+    function checkDescription() {
+        if (Description) {
+            if (Description.length < 20) {
+                setErrorMsg('Enter Description Minimum 20 Characters')
                 return false
-
             }
-            if (profile.name != name) {
-                if (!verifyName()) {
-                    return false
-                }
-
-            }
-            if (password != pass) {
-                if (!verifyPass()) {
-                    return false
-                }
-            }
-
             return true
         }
-
-        else {
-            setIsEditMode(true)
+        return true
+    }
+    function checkPrice() {
+        if (price) {
+            if (!isNaN(price)) {
+                return true
+            }
+            setErrorMsg('Invali Price')
             return false
         }
+        setErrorMsg('Please Enter a Price')
+        return false
+    }
+    function checkOptions() {
+        if (profile.homeDelivery && options.length) {
+            let isOK = true
+            options.map((option, i) => {
+                if (isOK) {
+                    if (option.name.length < 1) {
+                        setErrorMsg('Please Enter All Options Name')
+                        isOK = false
+                    }
+                    if (isOK) {
+                        let isName = true
+                        option.list.map(item => {
+                            if (item.length < 1) {
+                                isName = false
+                            }
+                        })
+                        if (!isName) {
+                            setErrorMsg('Please Enter All Options Item Names')
+                            isOK = false
+                        }
+                    }
+                }
+
+            })
+            return isOK
+        }
+        return true
     }
 
-    function goToDone() {
+    function checkData() {
 
-        setIsEditMode(false)
+        if (!image) {
+            setErrorMsg('Please Upload Item Image')
+            return false
+        }
+        if (!name) {
+            setErrorMsg('Please Enter a Name')
+            return false
+        }
+        if (!checkPrice()) {
+            return false
+        }
+        if (!selectCat) {
+            setErrorMsg('Please Select Category')
+            return false
+        }
+        if (!selectSubCat) {
+            setErrorMsg('Please Select Sub Category')
+            return false
+        }
+        if (!checkDescription()) {
+            return false
+        }
+        if (!checkOptions()) {
+            return false
+        }
+
+        return true
+    }
+
+    function goToDone(newP) {
+
         setIsLoading(false)
-        Alert.alert('Updated Successfully')
+        disptach(setProfile(newP))
+        const msg = item.id ? 'Updated Successfully' : 'Add Successfully'
+        Alert.alert(msg)
 
 
     }
     function onSave() {
-        if (checking()) {
-            setIsLoading(true)
-            firestore().collection('restaurants').doc(profile.uid)
-                .update({
-                    name: name,
-                    password: encodeInfo(password),
-                    city: city,
-                    icon: image,
+        if (checkData()) {
 
-                })
+            setIsLoading(true)
+            let newFoodCat = [...foodCategory]
+            let isNewItem = item.id ? false : true
+            let newSubCategories = subCategories
+
+            const NewItem = {
+                resId: profile.uid,
+                resName: profile.name,
+                price: parseFloat(price),
+                description: Description ? Description : null,
+                id: id,
+                name: name,
+                image: image,
+                rating: item.rating ? item.rating : 0,
+                noOfRatings: item.noOfRatings ? item.noOfRatings : 0,
+                options: options ? options : [],
+                subCatName: selectSubCat,
+                catName: selectCat
+            }
+            const isCatExists = newFoodCat.findIndex(it => (it.name == selectSubCat))
+
+            if (isCatExists != -1) {
+                let existCat = newFoodCat[isCatExists]
+                let existItems = [...existCat.items]
+                const indexItem = existItems.findIndex(it => (it.id == id))
+
+                if (isNewItem || indexItem == -1) {
+                    existItems.push(NewItem)
+                    newFoodCat[isCatExists] = {
+                        ...existCat,
+                        items: existItems
+                    }
+
+                }
+                else {
+                    existItems[indexItem] = NewItem
+                    newFoodCat[isCatExists] = {
+                        ...existCat,
+                        items: existItems
+                    }
+
+                }
+
+            } else {
+                newFoodCat.push(
+
+                    {
+                        name: selectSubCat,
+
+                        items: [NewItem]
+                    }
+                )
+            }
+
+            // Remove item from previous category if sub category change
+            if (!isNewItem && selectSubCat != item.subCatName) {
+
+                let removeIndex = null
+                let removeItems = null
+                const removeArray = []
+                newFoodCat.map((it, i) => {
+
+                    if (it.name == item.subCatName) {
+                        removeIndex = i
+                        removeItems = it
+                    }
+                    else {
+
+                        removeArray.push(it)
+                    }
+                }
+                )
+                const afterRem = removeItems.items.filter(it => it.id != id)
+                if (!afterRem.length) {
+                    newSubCategories = newSubCategories.filter(it => it != item.subCatName)
+                    newFoodCat = removeArray
+                } else {
+
+                    newFoodCat[removeIndex] = {
+                        ...removeItems,
+                        items: afterRem,
+                    }
+                }
+
+            }
+
+
+            let copyResCategories = [...resCategories]
+            const check = copyResCategories.filter(it => it == selectCat)
+
+            if (!check.length) {
+
+                copyResCategories.push(selectCat)
+            }
+
+            const newProfile = {
+                ...profile,
+                categories: copyResCategories,
+                subCategories: newSubCategories,
+                foodCategory: newFoodCat,
+            }
+
+
+
+            firestore().collection('restaurants').doc(profile.uid)
+                .update(newProfile)
                 .then((data) => {
-                    goToDone()
+                    goToDone(newProfile)
                 }).catch(err => {
                     setErrorMsg('Something wrong')
                     console.log('Internal error while Updating profile', err)
@@ -548,7 +688,7 @@ export const ItemEdit = ({ navigation, route }) => {
                                     fontSize: myFontSize.xBody,
 
                                     color: myColors.primaryT
-                                }]}>Add More</Text>
+                                }]}>Add</Text>
 
                             <Spacer paddingEnd={myWidth(1)} />
 
@@ -652,7 +792,7 @@ export const ItemEdit = ({ navigation, route }) => {
 
                                         color: myColors.red,
                                         paddingStart: myWidth(4)
-                                    }]}>No Sub Category Found Click On Add More</Text>
+                                    }]}>No Sub Category Found Click On Add</Text>
                         }
                     </View>
 
@@ -698,207 +838,620 @@ export const ItemEdit = ({ navigation, route }) => {
                 <Spacer paddingT={myHeight(2.5)} />
 
                 {/* Options */}
-                <View>
-
-                    <View style={{
-                        alignItems: 'center', flexDirection: 'row',
-                        justifyContent: 'space-between'
-                    }}>
-                        <Text style={[styles.textCommon, {
-
-                            fontFamily: myFonts.heading,
-                            fontSize: myFontSize.xBody2,
-
-                        }]}>Options</Text>
-
-                        {/* See all */}
-                        <TouchableOpacity style={{
-                            flexDirection: 'row', alignItems: 'center', paddingVertical: myHeight(0.4),
-                            paddingStart: myWidth(2)
-                        }} activeOpacity={0.6} onPress={() => setAddCategory(!addCategory)}>
-
-                            <Text
-                                style={[styles.textCommon, {
-                                    fontFamily: myFonts.heading,
-                                    fontSize: myFontSize.xBody,
-
-                                    color: myColors.primaryT
-                                }]}>Add More</Text>
-
-                            <Spacer paddingEnd={myWidth(1)} />
-
-                            <Image style={{
-                                height: myHeight(2), width: myHeight(2), marginStart: myWidth(1),
-                                resizeMode: 'contain', tintColor: myColors.primaryT, transform: [{ rotate: addCategory ? '-90deg' : '90deg' }]
-                            }} source={require('../assets/home_main/home/go.png')} />
-
-                        </TouchableOpacity>
-                    </View>
-
-                    <Collapsible collapsed={!addCategory}>
-                        <Spacer paddingT={myHeight(1.5)} />
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                {
+                    profile.homeDelivery ?
+                        <View>
 
                             <View style={{
-                                borderRadius: myWidth(1.5),
-
-                                paddingHorizontal: myWidth(2),
-                                // paddingVertical: myHeight(0.5),
-                                paddingEnd: myWidth(3),
-                                color: myColors.text,
-                                flex: 1,
-
-                                backgroundColor: myColors.offColor7,
-                                // borderWidth: 0.7,
-                                // borderColor: myColors.primaryT
+                                alignItems: 'center', flexDirection: 'row',
+                                justifyContent: 'space-between'
                             }}>
+                                <Text style={[styles.textCommon, {
 
-                                <TextInput placeholder="Item Name"
-                                    autoCorrect={false}
-                                    maxLength={20}
-                                    placeholderTextColor={myColors.offColor}
-                                    selectionColor={myColors.primary}
-                                    cursorColor={myColors.primaryT}
-                                    value={newCat} onChangeText={setNewCat}
-                                    style={{
-                                        flex: 1,
-                                        padding: 0,
-                                        backgroundColor: myColors.offColor7,
+                                    fontFamily: myFonts.heading,
+                                    fontSize: myFontSize.xBody2,
 
-                                        // textAlign: 'center'
-                                    }}
-                                />
+                                }]}>Options</Text>
 
-                            </View>
-                            <Spacer paddingEnd={myWidth(4)} />
-                            <TouchableOpacity activeOpacity={0.7} onPress={onAddNewCat} style={{
-                                paddingVertical: myHeight(0.9), marginVertical: myHeight(0.2),
-                                paddingHorizontal: myWidth(5),
-                                backgroundColor: myColors.primaryT, borderRadius: 5
-                            }}>
-                                <Text style={[styles.textCommon,
-                                {
-                                    fontFamily: myFonts.body,
-                                    fontSize: myFontSize.body3,
-                                    color: myColors.background
+                                {/* See all */}
+                                <TouchableOpacity style={{
+                                    flexDirection: 'row', alignItems: 'center', paddingVertical: myHeight(0.4),
+                                    paddingStart: myWidth(2)
+                                }} activeOpacity={0.6} onPress={() => setAddOption(!addOption)}>
 
-                                }]}>Add</Text>
-
-                            </TouchableOpacity>
-                        </View>
-                        <Spacer paddingT={myHeight(1)} />
-
-                    </Collapsible>
-                    {
-                        options.map((option, i) => {
-
-                            return (
-
-                                <View key={i}>
-                                    <Spacer paddingT={myHeight(1)} />
-
-                                    <View style={{
-                                        height: myHeight(0.5), backgroundColor: myColors.dot
-                                    }} />
-                                    <Spacer paddingT={myHeight(1)} />
-                                    {/* Name & Required */}
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                                        <Text style={[styles.textCommon, {
-                                            fontSize: myFontSize.xBody,
+                                    <Text
+                                        style={[styles.textCommon, {
                                             fontFamily: myFonts.heading,
-                                        }]}>{option.name}</Text>
+                                            fontSize: myFontSize.xBody,
+
+                                            color: myColors.primaryT
+                                        }]}>Add</Text>
+
+                                    <Spacer paddingEnd={myWidth(1)} />
+
+                                    <Image style={{
+                                        height: myHeight(2), width: myHeight(2), marginStart: myWidth(1),
+                                        resizeMode: 'contain', tintColor: myColors.primaryT, transform: [{ rotate: addOption ? '-90deg' : '90deg' }]
+                                    }} source={require('../assets/home_main/home/go.png')} />
+
+                                </TouchableOpacity>
+                            </View>
+
+                            <Collapsible collapsed={!addOption}>
+                                <Spacer paddingT={myHeight(1.5)} />
 
 
-                                        <TouchableOpacity
+                                <View style={{
+                                    height: myHeight(0.5), backgroundColor: myColors.primaryL2
+                                }} />
+                                <Spacer paddingT={myHeight(2)} />
+                                {/* Name & Required */}
+                                <View style={{
+                                    flexDirection: 'row', alignItems: 'center',
+                                    justifyContent: 'space-between'
+                                }}>
+                                    <View style={{
+                                        borderRadius: myWidth(1.5),
+
+                                        paddingHorizontal: myWidth(2),
+                                        paddingVertical: myHeight(0.3),
+                                        paddingEnd: myWidth(3),
+                                        color: myColors.text,
+                                        flex: 1,
+
+                                        backgroundColor: myColors.offColor7,
+                                        // borderWidth: 0.7,
+                                        // borderColor: myColors.primaryT
+                                    }}>
+
+                                        <TextInput placeholder="New Option Name"
+                                            autoCorrect={false}
+                                            maxLength={30}
+                                            placeholderTextColor={myColors.offColor}
+                                            selectionColor={myColors.primary}
+                                            value={optionSelect.name}
+                                            onChangeText={(val) => {
+
+                                                const copy = {
+                                                    ...optionSelect,
+                                                    name: val
+                                                }
+
+                                                // console.log(copy)
+
+                                                setOptionSelect(copy)
+                                                setChange(!change)
+
+                                            }}
+                                            cursorColor={myColors.primaryT}
+
+                                            // value={newCat} onChangeText={setNewCat}
                                             style={{
-                                                paddingHorizontal: myWidth(4),
-                                                paddingVertical: myHeight(0.2),
-                                                backgroundColor: myColors.red,
-                                                borderRadius: myWidth(1)
-                                            }}>
-                                            <Text style={[styles.textCommon, {
-                                                fontSize: myFontSize.body2,
-                                                fontFamily: myFonts.body,
-                                                color: myColors.background
-                                            }]}>Remove</Text>
-                                        </TouchableOpacity>
+                                                flex: 1,
+                                                padding: 0,
+                                                backgroundColor: myColors.offColor7,
+                                                fontSize: myFontSize.xBody,
+                                                fontFamily: myFonts.bodyBold,
 
+                                                // textAlign: 'center'
+                                            }}
+                                        />
 
                                     </View>
-                                    <Spacer paddingT={myHeight(0.6)} />
+                                    <Spacer paddingEnd={myWidth(4)} />
 
-                                    {
-                                        option.list?.map((item, i) =>
-                                            <View key={i}>
-                                                {/* Divider */}
-                                                {
-                                                    i != 0 &&
-                                                    <View style={{
-                                                        width: '100%', borderTopWidth: myHeight(0.12),
-                                                        borderColor: myColors.dot,
-                                                    }} />
+
+                                    <TouchableOpacity
+                                        activeOpacity={0.85}
+                                        onPress={() => {
+                                            const option = optionSelect
+                                            if (option.name.length < 1) {
+                                                setErrorMsg('Please Enter Option Name')
+                                                return false
+                                            }
+                                            let isName = true
+                                            option.list.map(item => {
+                                                if (item.length < 1) {
+                                                    isName = false
                                                 }
-                                                <Spacer paddingT={myHeight(1)} />
+                                            })
+                                            if (!isName) {
+                                                setErrorMsg('Please Enter All Option Item Name')
+                                                return false
+                                            }
 
-                                                {/* List name & circle */}
-                                                <TouchableOpacity activeOpacity={0.8} style={{
-                                                    flexDirection: 'row', alignItems: 'center'
-                                                }}
+                                            setAddOption(false)
+                                            setOptionSelect({
+
+                                                required: false,
+                                                name: '',
+                                                list: ['', '']
+                                            })
+                                            options.push(option)
+                                            options.reverse()
+                                            setOptios(options)
+
+
+
+                                        }}
+                                        style={{
+                                            paddingHorizontal: myWidth(4),
+                                            paddingVertical: myHeight(0.6),
+                                            backgroundColor: myColors.primaryT,
+                                            borderRadius: myWidth(1)
+                                        }}>
+                                        <Text style={[styles.textCommon, {
+                                            fontSize: myFontSize.body2,
+                                            fontFamily: myFonts.body,
+                                            color: myColors.background,
+                                        }]}>Add</Text>
+                                    </TouchableOpacity>
+
+                                </View>
+                                <Spacer paddingT={myHeight(1.5)} />
+                                <TouchableOpacity activeOpacity={0.85}
+                                    onPress={() => {
+                                        const copy = {
+                                            ...optionSelect,
+                                            required: optionSelect.required ? false : true
+                                        }
+
+                                        setOptionSelect(copy)
+                                        setChange(!change)
+                                    }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', paddingStart: myWidth(1) }}>
+                                        <View style={{
+                                            height: myHeight(3.2),
+                                            width: myHeight(3.2),
+                                            paddingTop: myHeight(0.6)
+                                        }}>
+                                            <View style={{ width: myHeight(2.2), height: myHeight(2.2), borderWidth: 1.5, borderColor: myColors.textL4 }} />
+                                            {
+                                                optionSelect.required &&
+                                                <Image style={{
+                                                    height: myHeight(3.2),
+                                                    width: myHeight(3.2),
+                                                    resizeMode: 'contain',
+                                                    tintColor: myColors.primaryT,
+                                                    marginTop: -myHeight(3)
+                                                }} source={require('../assets/profile/check2.png')} />
+                                            }
+                                        </View>
+                                        <Spacer paddingEnd={myWidth(1)} />
+                                        <Text style={[styles.textCommon,
+                                        {
+                                            fontFamily: myFonts.bodyBold,
+                                            fontSize: myFontSize.xBody,
+
+                                        }]}>Require <Text
+                                            style={{
+                                                fontFamily: myFonts.body,
+                                                fontSize: myFontSize.body2,
+
+                                            }}>{"(User Must Select Before Place Order)"}</Text></Text>
+                                    </View>
+                                </TouchableOpacity>
+
+                                <Spacer paddingT={myHeight(1)} />
+
+                                {
+                                    optionSelect.list?.map((item, listI) =>
+                                        <View key={listI}>
+                                            {/* Divider */}
+
+                                            <Spacer paddingT={myHeight(1)} />
+
+                                            <View style={{ paddingHorizontal: myWidth(3), flexDirection: 'row', alignItems: 'center' }}>
+
+                                                <View style={{
+                                                    borderRadius: myWidth(1.5),
+
+                                                    paddingHorizontal: myWidth(2),
+                                                    // paddingVertical: myHeight(1),
+                                                    paddingEnd: myWidth(3),
+                                                    color: myColors.text,
+                                                    flex: 1,
+
+                                                    backgroundColor: myColors.offColor7,
+                                                    // borderWidth: 0.7,
+                                                    // borderColor: myColors.primaryT
+                                                }}>
+
+                                                    <TextInput placeholder="Item Name"
+                                                        autoCorrect={false}
+                                                        maxLength={30}
+                                                        placeholderTextColor={myColors.offColor}
+                                                        selectionColor={myColors.primary}
+                                                        cursorColor={myColors.primaryT}
+                                                        value={item}
+                                                        onChangeText={(val) => {
+                                                            let newList = optionSelect.list
+                                                            newList[listI] = val
+                                                            const copy = {
+                                                                ...optionSelect,
+                                                                list: newList
+                                                            }
+
+                                                            // console.log(copy)
+                                                            setOptionSelect(copy)
+                                                            setChange(!change)
+
+                                                        }}
+                                                        style={{
+                                                            flex: 1,
+                                                            padding: 0,
+                                                            backgroundColor: myColors.offColor7,
+                                                            // paddingVertical: myHeight(1)
+                                                            // textAlign: 'center'
+                                                        }}
+                                                    />
+
+                                                </View>
+
+                                                {/* bin */}
+                                                <TouchableOpacity activeOpacity={0.7}
+                                                    disabled={optionSelect.list.length <= 2}
                                                     onPress={() => {
-
-                                                        if (selectItems[option.name]) {
-                                                            setSelectItems({
-                                                                ...selectItems,
-                                                                [option.name]: item
-                                                            })
-                                                            return
+                                                        let newList = []
+                                                        optionSelect.list.map((it, li) => {
+                                                            if (listI != li) {
+                                                                newList.push(it)
+                                                            }
+                                                        })
+                                                        const copy = {
+                                                            ...optionSelect,
+                                                            list: newList
                                                         }
-                                                        const tem = {
-                                                            ...selectItems,
-                                                            [option.name]: item
-                                                        }
-                                                        setSelectItems(tem)
-                                                    }} >
-                                                    {/* list name */}
-                                                    <Text style={[styles.textCommon, {
-                                                        flex: 1,
-                                                        fontSize: myFontSize.xBody,
-                                                        fontFamily: myFonts.body,
-                                                    }]}>{item}</Text>
 
-                                                    {/* bin */}
-                                                    <TouchableOpacity activeOpacity={0.7}
-                                                        onPress={() => null} style={{ paddingHorizontal: myWidth(4), }}>
-                                                        <Image style={{
-                                                            height: myHeight(2.4),
-                                                            width: myHeight(2.4),
-                                                            resizeMode: 'contain',
-                                                            tintColor: myColors.primaryT
-                                                        }} source={require('../assets/home_main/home/bin.png')} />
-                                                    </TouchableOpacity>
+                                                        setOptionSelect(copy)
+                                                        setChange(!change)
 
-                                                    {/* Circle */}
-                                                    {/* <View style={{
+
+                                                    }}
+                                                    style={{ paddingHorizontal: myWidth(4), marginEnd: -myWidth(3) }}>
+                                                    <Image style={{
+                                                        height: myHeight(2.4),
+                                                        width: myHeight(2.4),
+                                                        resizeMode: 'contain',
+                                                        tintColor: optionSelect.list.length <= 2 ? myColors.offColor : myColors.primaryT
+                                                    }} source={require('../assets/home_main/home/bin.png')} />
+                                                </TouchableOpacity>
+
+                                                {/* Circle */}
+                                                {/* <View style={{
                                                         width: myHeight(2.8), height: myHeight(2.8),
                                                         borderColor: myColors.primaryT, borderRadius: myHeight(3),
                                                         // borderWidth: selectItems[option.name] == item ? myHeight(0.9) : myHeight(0.2),
                                                         borderWidth: myHeight(0.9)
                                                     }} /> */}
 
+                                            </View>
+                                            <Spacer paddingT={myHeight(1)} />
+
+                                        </View>
+                                    )
+                                }
+                                <Spacer paddingT={myHeight(1)} />
+
+                                <TouchableOpacity onPress={() => {
+                                    optionSelect.list.push('')
+                                    const copy = { ...optionSelect }
+
+                                    setOptionSelect(copy)
+                                    setChange(!change)
+
+                                }}
+                                    activeOpacity={0.8}
+                                    style={{
+                                        width: myWidth(85), alignSelf: 'center', paddingVertical: myHeight(0.7),
+                                        borderRadius: myWidth(1.4), alignItems: 'center', justifyContent: 'center',
+                                        flexDirection: 'row', backgroundColor: myColors.background,
+                                        borderWidth: myHeight(0.12), borderColor: myColors.primaryT
+                                    }}>
+                                    <Text style={[styles.textCommon, {
+                                        fontFamily: myFonts.bodyBold,
+                                        fontSize: myFontSize.body,
+                                        color: myColors.primaryT,
+                                    }]}>Add Item</Text>
+                                </TouchableOpacity>
+
+                                <Spacer paddingT={myHeight(1)} />
+
+
+
+                            </Collapsible>
+                            {
+                                options?.map((option, i) => {
+
+                                    return (
+
+                                        <View key={i}>
+                                            <Spacer paddingT={myHeight(1)} />
+
+                                            <View style={{
+                                                height: myHeight(0.5), backgroundColor: myColors.primaryL2
+                                            }} />
+                                            <Spacer paddingT={myHeight(2)} />
+                                            {/* Name & Required */}
+                                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                <View style={{
+                                                    borderRadius: myWidth(1.5),
+
+                                                    paddingHorizontal: myWidth(2),
+                                                    paddingVertical: myHeight(0.3),
+                                                    paddingEnd: myWidth(3),
+                                                    color: myColors.text,
+                                                    flex: 1,
+
+                                                    backgroundColor: myColors.offColor7,
+                                                    // borderWidth: 0.7,
+                                                    // borderColor: myColors.primaryT
+                                                }}>
+
+                                                    <TextInput placeholder="Option Name"
+                                                        autoCorrect={false}
+                                                        maxLength={30}
+                                                        placeholderTextColor={myColors.offColor}
+                                                        selectionColor={myColors.primary}
+                                                        value={option.name}
+                                                        onChangeText={(val) => {
+
+                                                            const copy = {
+                                                                ...option,
+                                                                name: val
+                                                            }
+
+                                                            // console.log(copy)
+                                                            options[i] = copy
+                                                            setOptios(options)
+                                                            setChange(!change)
+
+                                                        }}
+                                                        cursorColor={myColors.primaryT}
+
+                                                        // value={newCat} onChangeText={setNewCat}
+                                                        style={{
+                                                            flex: 1,
+                                                            padding: 0,
+                                                            backgroundColor: myColors.offColor7,
+                                                            fontSize: myFontSize.xBody,
+                                                            fontFamily: myFonts.bodyBold,
+
+                                                            // textAlign: 'center'
+                                                        }}
+                                                    />
+
+                                                </View>
+                                                <Spacer paddingEnd={myWidth(4)} />
+
+
+                                                <TouchableOpacity
+                                                    activeOpacity={0.85}
+                                                    onPress={() => {
+                                                        let newOption = []
+                                                        options.map((op, oi) => {
+                                                            if (oi != i) {
+                                                                newOption.push(op)
+                                                            }
+                                                        })
+
+
+                                                        setOptios(newOption)
+                                                        // setChange(!change)
+                                                    }}
+                                                    style={{
+                                                        paddingHorizontal: myWidth(4),
+                                                        paddingVertical: myHeight(0.6),
+                                                        backgroundColor: myColors.red,
+                                                        borderRadius: myWidth(1)
+                                                    }}>
+                                                    <Text style={[styles.textCommon, {
+                                                        fontSize: myFontSize.body2,
+                                                        fontFamily: myFonts.body,
+                                                        color: myColors.background,
+                                                    }]}>Remove</Text>
                                                 </TouchableOpacity>
-                                                <Spacer paddingT={myHeight(1)} />
 
                                             </View>
-                                        )
-                                    }
-                                    <Spacer paddingT={myHeight(1)} />
-                                </View>
-                            )
-                        }
-                        )
-                    }
-                </View>
+                                            <Spacer paddingT={myHeight(1.5)} />
+                                            <TouchableOpacity activeOpacity={0.85}
+                                                onPress={() => {
+                                                    const copy = {
+                                                        ...option,
+                                                        required: option.required ? false : true
+                                                    }
+
+                                                    options[i] = copy
+                                                    setOptios(options)
+                                                    setChange(!change)
+                                                }}>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center', paddingStart: myWidth(1) }}>
+                                                    <View style={{
+                                                        height: myHeight(3.2),
+                                                        width: myHeight(3.2),
+                                                        paddingTop: myHeight(0.6)
+                                                    }}>
+                                                        <View style={{ width: myHeight(2.2), height: myHeight(2.2), borderWidth: 1.5, borderColor: myColors.textL4 }} />
+                                                        {
+                                                            option.required &&
+                                                            <Image style={{
+                                                                height: myHeight(3.2),
+                                                                width: myHeight(3.2),
+                                                                resizeMode: 'contain',
+                                                                tintColor: myColors.primaryT,
+                                                                marginTop: -myHeight(3)
+                                                            }} source={require('../assets/profile/check2.png')} />
+                                                        }
+                                                    </View>
+                                                    <Spacer paddingEnd={myWidth(1)} />
+                                                    <Text style={[styles.textCommon,
+                                                    {
+                                                        fontFamily: myFonts.bodyBold,
+                                                        fontSize: myFontSize.xBody,
+
+                                                    }]}>Require <Text
+                                                        style={{
+                                                            fontFamily: myFonts.body,
+                                                            fontSize: myFontSize.body2,
+
+                                                        }}>{"(User Must Select Before Place Order)"}</Text></Text>
+                                                </View>
+                                            </TouchableOpacity>
+
+                                            <Spacer paddingT={myHeight(1)} />
+
+                                            {
+                                                option.list?.map((item, listI) =>
+                                                    <View key={listI}>
+                                                        {/* Divider */}
+                                                        {
+                                                            i != 0 &&
+                                                            <View style={{
+                                                                width: '100%', borderTopWidth: myHeight(0.12),
+                                                                borderColor: myColors.dot,
+                                                            }} />
+                                                        }
+                                                        <Spacer paddingT={myHeight(1)} />
+
+                                                        <View style={{ paddingHorizontal: myWidth(3), flexDirection: 'row', alignItems: 'center' }}>
+
+                                                            <View style={{
+                                                                borderRadius: myWidth(1.5),
+
+                                                                paddingHorizontal: myWidth(2),
+                                                                // paddingVertical: myHeight(0.5),
+                                                                paddingEnd: myWidth(3),
+                                                                color: myColors.text,
+                                                                flex: 1,
+
+                                                                backgroundColor: myColors.offColor7,
+                                                                // borderWidth: 0.7,
+                                                                // borderColor: myColors.primaryT
+                                                            }}>
+
+                                                                <TextInput placeholder="Item Name"
+                                                                    autoCorrect={false}
+                                                                    maxLength={30}
+                                                                    placeholderTextColor={myColors.offColor}
+                                                                    selectionColor={myColors.primary}
+                                                                    cursorColor={myColors.primaryT}
+                                                                    value={item}
+                                                                    onChangeText={(val) => {
+                                                                        let newList = option.list
+                                                                        newList[listI] = val
+                                                                        const copy = {
+                                                                            ...option,
+                                                                            list: newList
+                                                                        }
+
+                                                                        // console.log(copy)
+                                                                        options[i] = copy
+                                                                        setOptios(options)
+                                                                        setChange(!change)
+
+                                                                    }}
+                                                                    style={{
+                                                                        flex: 1,
+                                                                        padding: 0,
+                                                                        backgroundColor: myColors.offColor7,
+
+                                                                        // textAlign: 'center'
+                                                                    }}
+                                                                />
+
+                                                            </View>
+
+                                                            {/* bin */}
+                                                            <TouchableOpacity activeOpacity={0.7}
+                                                                disabled={option.list.length <= 2}
+                                                                onPress={() => {
+                                                                    let newList = []
+                                                                    option.list.map((it, li) => {
+                                                                        if (listI != li) {
+                                                                            newList.push(it)
+                                                                        }
+                                                                    })
+                                                                    const copy = {
+                                                                        ...option,
+                                                                        list: newList
+                                                                    }
+
+                                                                    options[i] = copy
+                                                                    setOptios(options)
+                                                                    setChange(!change)
+
+
+                                                                }}
+                                                                style={{ paddingHorizontal: myWidth(4), marginEnd: -myWidth(3) }}>
+                                                                <Image style={{
+                                                                    height: myHeight(2.4),
+                                                                    width: myHeight(2.4),
+                                                                    resizeMode: 'contain',
+                                                                    tintColor: option.list.length <= 2 ? myColors.offColor : myColors.primaryT
+                                                                }} source={require('../assets/home_main/home/bin.png')} />
+                                                            </TouchableOpacity>
+
+                                                            {/* Circle */}
+                                                            {/* <View style={{
+                                                        width: myHeight(2.8), height: myHeight(2.8),
+                                                        borderColor: myColors.primaryT, borderRadius: myHeight(3),
+                                                        // borderWidth: selectItems[option.name] == item ? myHeight(0.9) : myHeight(0.2),
+                                                        borderWidth: myHeight(0.9)
+                                                    }} /> */}
+
+                                                        </View>
+                                                        <Spacer paddingT={myHeight(1)} />
+
+                                                    </View>
+                                                )
+                                            }
+                                            <Spacer paddingT={myHeight(1)} />
+
+                                            <TouchableOpacity onPress={() => {
+                                                option.list.push('')
+                                                const copy = { ...option }
+
+                                                options[i] = copy
+                                                setOptios(options)
+                                                setChange(!change)
+
+
+
+                                            }}
+                                                activeOpacity={0.8}
+                                                style={{
+                                                    width: myWidth(85), alignSelf: 'center', paddingVertical: myHeight(0.7),
+                                                    borderRadius: myWidth(1.4), alignItems: 'center', justifyContent: 'center',
+                                                    flexDirection: 'row', backgroundColor: myColors.background,
+                                                    borderWidth: myHeight(0.12), borderColor: myColors.primaryT
+                                                }}>
+                                                <Text style={[styles.textCommon, {
+                                                    fontFamily: myFonts.bodyBold,
+                                                    fontSize: myFontSize.body,
+                                                    color: myColors.primaryT,
+                                                }]}>Add Item</Text>
+                                            </TouchableOpacity>
+
+                                            <Spacer paddingT={myHeight(1)} />
+                                        </View>
+                                    )
+                                }
+                                )
+                            }
+                        </View>
+
+                        :
+                        <Text style={[styles.textCommon,
+                        {
+                            fontFamily: myFonts.heading,
+                            fontSize: myFontSize.body,
+                            textAlign: 'center',
+                            color: myColors.textL4
+
+
+                        }]}>Item Options Hidden Because Home Delivery Not Available In Your Restaurant</Text>
+                }
+
                 <Spacer paddingT={myHeight(2.5)} />
 
 
@@ -908,21 +1461,22 @@ export const ItemEdit = ({ navigation, route }) => {
             </KeyboardAwareScrollView>
 
 
+
             <TouchableOpacity onPress={onSave}
                 activeOpacity={0.8}
                 style={{
                     width: myWidth(92), alignSelf: 'center', paddingVertical: myHeight(1.3),
                     borderRadius: myHeight(1.4), alignItems: 'center', justifyContent: 'center',
-                    flexDirection: 'row', backgroundColor: myColors.primaryT,
-                    // borderWidth: myHeight(0.15), borderColor: myColors.primaryT
+                    flexDirection: 'row', backgroundColor: myColors.primaryT, marginVertical: myHeight(3),
+                    // borderTopWidth: 1.5, borderColor: myColors.divider
                 }}>
                 <Text style={[styles.textCommon, {
                     fontFamily: myFonts.heading,
                     fontSize: myFontSize.body3,
                     color: myColors.background
-                }]}>{isEditMode ? 'Save tem' : 'Edit Item'}</Text>
+                }]}>Save item</Text>
             </TouchableOpacity>
-            <Spacer paddingT={myHeight(5)} />
+            {/* <Spacer paddingT={myHeight(5)} /> */}
 
             {isLoading && <Loader />}
             {errorMsg && <MyError message={errorMsg} />}

@@ -19,7 +19,7 @@ export const RestaurantDetail = ({ navigation, route }) => {
   const { foodCategory } = restaurant;
   const [selectCat, setSelectCat] = useState(null);
   const [currentItem, setCurrentItems] = useState([]);
-
+  // console.log(foodCategory[0].items)
   //Back Functions
 
   // const onBackPress = () => {
@@ -166,7 +166,7 @@ export const RestaurantDetail = ({ navigation, route }) => {
               borderRadius: myHeight(6),
               borderWidth: myHeight(0.15),
               marginTop: -myHeight(3),
-              borderColor: myColors.primaryT,
+              borderColor: myColors.background,
               alignSelf: 'center',
             }}
             source={{ uri: restaurant.icon }}
@@ -334,6 +334,37 @@ export const RestaurantDetail = ({ navigation, route }) => {
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => {
+                  setSelectCat(null)
+                  setCurrentItems([])
+                }}
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: myHeight(15),
+                  backgroundColor: selectCat == null ? myColors.primaryL2 : myColors.background,
+                  // backgroundColor:myColors.primaryL,
+                  paddingVertical: myHeight(1.5),
+                  paddingHorizontal: myWidth(4),
+                  marginEnd: myWidth(2.7),
+                  elevation: 8,
+                }}>
+                <Text
+                  style={[
+                    styles.textCommon,
+                    {
+                      fontSize: myFontSize.body2,
+                      fontFamily: myFonts.heading,
+                    },
+                  ]}>
+                  {'All'}
+                </Text>
+                <Spacer paddingEnd={myWidth(2.7)} />
+              </TouchableOpacity>
+            </View>
+            {/* <View>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => {
                   navigation.navigate('ItemEdit', { item: {} })
                 }}
                 style={{
@@ -360,45 +391,48 @@ export const RestaurantDetail = ({ navigation, route }) => {
                 </Text>
                 <Spacer paddingEnd={myWidth(2.7)} />
               </TouchableOpacity>
-            </View>
-            {foodCategory?.map((cat, i) => {
-              return (
-                <View
-                  key={i}
-                  style={{ padding: myHeight(1.4), paddingEnd: myWidth(2) }}>
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={() => {
-                      setSelectCat(i)
-                      setCurrentItems(cat.items)
-                    }}
-                    style={{
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: myHeight(15),
-                      backgroundColor: selectCat == i ? myColors.primaryL2 : myColors.background,
-                      // backgroundColor:myColors.primaryL,
-                      paddingVertical: myHeight(1.5),
-                      paddingHorizontal: myWidth(4),
-                      elevation: 8,
-                    }}>
-                    <Text
-                      style={[
-                        styles.textCommon,
-                        {
-                          fontSize: myFontSize.body2,
-                          fontFamily: myFonts.heading,
-                        },
-                      ]}>
-                      {cat?.name}
-                    </Text>
-                    <Spacer paddingEnd={myWidth(2.7)} />
-                  </TouchableOpacity>
-                </View>
-              )
-            }
+            </View> */}
 
-            )}
+            {
+
+              foodCategory?.map((cat, i) => {
+                return (
+                  <View
+                    key={i}
+                    style={{ padding: myHeight(1.4), paddingEnd: myWidth(2) }}>
+                    <TouchableOpacity
+                      activeOpacity={0.8}
+                      onPress={() => {
+                        setSelectCat(i)
+                        setCurrentItems(cat.items)
+                      }}
+                      style={{
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: myHeight(15),
+                        backgroundColor: selectCat == i ? myColors.primaryL2 : myColors.background,
+                        // backgroundColor:myColors.primaryL,
+                        paddingVertical: myHeight(1.5),
+                        paddingHorizontal: myWidth(4),
+                        elevation: 8,
+                      }}>
+                      <Text
+                        style={[
+                          styles.textCommon,
+                          {
+                            fontSize: myFontSize.body2,
+                            fontFamily: myFonts.heading,
+                          },
+                        ]}>
+                        {cat?.name}
+                      </Text>
+                      <Spacer paddingEnd={myWidth(2.7)} />
+                    </TouchableOpacity>
+                  </View>
+                )
+              }
+
+              )}
 
           </View>
 
@@ -425,9 +459,11 @@ export const RestaurantDetail = ({ navigation, route }) => {
 
 
                       }}
-                      key={i} activeOpacity={0.9} onPress={() => navigation.navigate('ItemDetails', { item, restaurant })}>
+                      key={i} activeOpacity={0.9}
+                    // onPress={() => navigation.navigate('ItemDetails', { item, restaurant })}
+                    >
 
-                      <ItemInfo item={item} />
+                      <ItemInfo item={item} navigate={navigation.navigate} />
 
 
                     </TouchableOpacity>
@@ -449,9 +485,12 @@ export const RestaurantDetail = ({ navigation, route }) => {
                           style={{
 
                           }}
-                          key={i} activeOpacity={0.9} onPress={() => navigation.navigate('ItemDetails', { item, restaurant })}>
+                          key={i}
+                          activeOpacity={0.9}
+                        // onPress={() => navigation.navigate('ItemDetails', { item, restaurant })}
+                        >
 
-                          <ItemInfo item={item} />
+                          <ItemInfo item={item} navigate={navigation.navigate} />
 
 
                         </TouchableOpacity>

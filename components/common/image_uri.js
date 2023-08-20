@@ -6,7 +6,7 @@ import { myFontSize, myFonts, myLetSpacing } from '../../ultils/myFonts';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 
-export const ImageUri = ({ width = 0, height = 0, resizeMode = 'contain', uri = null, borderRadius = 20 }) => {
+export const ImageUri = ({ width = 0, height = 0, resizeMode = 'contain', uri = null, borderRadius = 0 }) => {
     const [isLoading, setIsLoading] = useState(true)
     return (
         <View style={{ width, height }}>

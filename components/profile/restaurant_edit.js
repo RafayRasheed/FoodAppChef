@@ -163,49 +163,51 @@ export const RestaurantEdit = ({ navigation }) => {
     }
 
     function onSave() {
-        if (isEditMode) {
-            if (checkData()) {
+        if (checkData()) {
 
-                setIsLoading(true)
-                const newProfile = {
-                    ...profile,
-                    description: Description ? Description : null,
-                    dineIn: DineIn ? DineIn : null,
-                    takeAway: TakeAway ? TakeAway : null,
-                    homeDelivery: Delivery ? Delivery : null,
-                    images: [image ? image : null],
-                    menu: MenuImages ? MenuImages : [],
-                    location: address ? address : null,
-                    locationLink: locLink ? locLink : null,
-                    delivery: DeliveryTime ? DeliveryTime : null,
-                    deliveryCharges: DeliveryFee ? parseFloat(DeliveryFee) : null,
-                    deal: offer ? offer : null,
-                    timmings: timmings,
-                    rating: 0,
-                    noOfRatings: 0,
-                    update: true,
-                    foodCategory: [],
-                    categories: [],
-                    subCategories: [],
-                }
-                // setAddress(JSON.stringify(newProfile))
-                firestore().collection('restaurants').doc(profile.uid)
-                    .update(newProfile)
-                    .then(() => {
-                        disptach(setProfile(newProfile))
-                        setIsLoading(false)
-                        setIsEditMode(false)
-                        Alert.alert('Updated Successfully')
-
-                    }).catch(err => {
-                        setErrorMsg('Something wrong')
-                        console.log('Internal error while Updating a Restaurant')
-                    });
+            setIsLoading(true)
+            const newProfile = {
+                ...profile,
+                description: Description ? Description : null,
+                dineIn: DineIn ? DineIn : null,
+                takeAway: TakeAway ? TakeAway : null,
+                homeDelivery: Delivery ? Delivery : null,
+                images: [image ? image : null],
+                menu: MenuImages ? MenuImages : [],
+                location: address ? address : null,
+                locationLink: locLink ? locLink : null,
+                delivery: DeliveryTime ? DeliveryTime : null,
+                deliveryCharges: DeliveryFee ? parseFloat(DeliveryFee) : null,
+                deal: offer ? offer : null,
+                timmings: timmings,
+                rating: profile.rating ? profile.rating : 0,
+                noOfRatings: profile.noOfRatings ? profile.noOfRatings : 0,
+                update: true,
+                foodCategory: profile.foodCategory ? profile.foodCategory : [],
+                categories: profile.categories ? profile.categories : [],
+                subCategories: profile.subCategories ? profile.subCategories : [],
             }
+            // setAddress(JSON.stringify(newProfile))
+            firestore().collection('restaurants').doc(profile.uid)
+                .update(newProfile)
+                .then(() => {
+                    disptach(setProfile(newProfile))
+                    setIsLoading(false)
+                    // setIsEditMode(false)
+                    const msg = profile.update ? 'Updated Successfully' : 'Add Successfully'
+                    Alert.alert(msg)
 
-        } else {
-            setIsEditMode(true)
+
+                }).catch(err => {
+                    setErrorMsg('Something wrong')
+                    console.log('Internal error while Updating a Restaurant')
+                });
+
+
         }
+        //  else {
+        //     setIsEditMode(true)
+        // }
 
     }
 
@@ -1201,10 +1203,10 @@ export const RestaurantEdit = ({ navigation }) => {
 
 
 
-                    {
+                    {/* {
                         !isEditMode &&
                         <View style={{ height: '100%', width: myWidth(100), position: 'absolute', backgroundColor: '#00000015' }} />
-                    }
+                    } */}
                 </KeyboardAwareScrollView>
 
 
@@ -1225,7 +1227,7 @@ export const RestaurantEdit = ({ navigation }) => {
                             fontFamily: myFonts.heading,
                             fontSize: myFontSize.body3,
                             color: myColors.background
-                        }]}>{isEditMode ? 'Save' : 'Edit Restaurant'}</Text>
+                        }]}>Save</Text>
                     </TouchableOpacity>
 
                     <Spacer paddingT={myHeight(3)} />
