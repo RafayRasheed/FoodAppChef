@@ -17,6 +17,7 @@ import { HomeSkeleton } from './home.component/home_skeleton';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import { RestaurantInfoFull } from './home.component/restaurant_info_full';
+import { setMainCategories } from '../../redux/category_reducer';
 
 if (!ios && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true)
@@ -25,10 +26,9 @@ export const HomeScreen = ({ navigation }) => {
     const name = "Someone";
     const { profile } = useSelector(state => state.profile)
 
-    const [isLoading, setIsLoading] = useState(true)
-    const [categories, setCategories] = useState(null)
-
     const dispatch = useDispatch()
+    const [isLoading, setIsLoading] = useState(true)
+
     function getCategories() {
         let catArray = []
         firestore().collection('categories').orderBy('count', 'desc').get().then((result) => {
@@ -36,13 +36,11 @@ export const HomeScreen = ({ navigation }) => {
                 result.forEach((cat) => {
                     catArray.push(cat.data())
                 })
-                setCategories(catArray)
+                dispatch(setMainCategories(catArray))
+                setIsLoading(false)
 
             }
-            else {
 
-                setCategories(catArray)
-            }
         }).catch((er) => {
             console.log('Error on Get Category', er)
         })
@@ -68,11 +66,7 @@ export const HomeScreen = ({ navigation }) => {
     //         console.log('Error while ge')
     //     })
     // dispatch(setCart(getCartLocal()))
-    useEffect(() => {
-        if (categories) {
-            setIsLoading(false)
-        }
-    }, [categories])
+
     return (
 
         <SafeAreaView style={styles.container}>
@@ -157,8 +151,7 @@ export const HomeScreen = ({ navigation }) => {
 
                         <Spacer paddingT={myHeight(2.5)} />
                         {/* CAtegories*/}
-                        <View>
-                            {/* Categories & see all*/}
+                        {/* <View>
                             <View style={{
                                 paddingHorizontal: myWidth(4), alignItems: 'center', flexDirection: 'row',
                                 justifyContent: 'space-between'
@@ -168,7 +161,6 @@ export const HomeScreen = ({ navigation }) => {
                                     fontFamily: myFonts.bodyBold,
                                 }]}>Categories</Text>
 
-                                {/* See all */}
                                 <TouchableOpacity style={{
                                     flexDirection: 'row', alignItems: 'center', paddingVertical: myHeight(0.4),
                                     paddingStart: myWidth(2)
@@ -227,7 +219,7 @@ export const HomeScreen = ({ navigation }) => {
                                 )}
                             </ScrollView>
 
-                        </View>
+                        </View> */}
                     </ScrollView>
             }
 

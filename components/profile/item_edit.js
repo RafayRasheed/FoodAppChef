@@ -17,27 +17,55 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import storage from '@react-native-firebase/storage';
 import { ImageUri } from '../common/image_uri';
 import uuid from 'react-native-uuid';
-
-
+import Collapsible from 'react-native-collapsible';
+const dummy = [
+    {
+        required: true,
+        name: 'Side Item',
+        list: ['Med Fries [350.0 Cals]', 'Med Fries [30.0 Cals]', 'Med Fries [50.0 Cals]', 'Med Fries [300.0 Cals]']
+    },
+    {
+        required: false,
+        name: 'Drink',
+        list: ['Soft Drinks', 'Coffee or Tea']
+    },
+    {
+        required: false,
+        name: 'Ice',
+        list: ['Soft Drinks', 'Coffee or Tea']
+    },
+]
 export const ItemEdit = ({ navigation, route }) => {
     const { profile } = useSelector(state => state.profile)
     const { item } = route.params
-    const pass = (deccodeInfo(profile.password))
     const [isLoading, setIsLoading] = useState(false)
-
-    const [name, setName] = useState(profile.name)
-    const [password, setPass] = useState(pass)
-    const [hidePass, setHidePass] = useState(true);
     const [isEditMode, setIsEditMode] = useState(false)
     const [errorMsg, setErrorMsg] = useState(null)
-    const [city, setCity] = useState(profile.city)
-    const [showCityModal, setShowCityModal] = useState(false)
     const [image, setImage] = useState(item.image ? item.image : null);
     const [imageLoading, setImageLoading] = useState(null)
+    const [name, setName] = useState(item.name ? item.name : null)
+    const [price, setPrice] = useState(item.price ? item.price : null)
+    const [newCat, setNewCat] = useState(null)
+    const [selectCat, setSelectCat] = useState(item.catName ? item.catName : null)
+    const [selectSubCat, setSelectSubCat] = useState(item.catName ? item.catName : null)
+    // const [resCategories, setResCategories] = useState(profile.categories ? profile.categories : [])
+    const resCategories = profile.categories ? profile.categories : []
+    const [subCategories, setSubCategories] = useState(profile.subCategories ? profile.subCategories : [])
+    const [addCategory, setAddCategory] = useState(false)
     const id = item.id ? item.id : uuid.v4()
+
+    const { mainCategories } = useSelector(state => state.mainCategories)
+
+    const [categories, setCategories] = useState(mainCategories)
+
+    const [Description, SetDescription] = useState(item.description)
+
+    const [options, setOptios] = useState(item.options ? [...item.options] : [...dummy])
 
 
     const disptach = useDispatch()
+
+
     useEffect(() => {
         if (errorMsg) {
             setTimeout(() => {
@@ -47,6 +75,7 @@ export const ItemEdit = ({ navigation, route }) => {
                 , errorTime)
         }
     }, [errorMsg])
+
 
     function verifyName() {
         if (name) {
@@ -211,6 +240,27 @@ export const ItemEdit = ({ navigation, route }) => {
         // }
 
     };
+
+    function onAddNewCat() {
+        if (newCat) {
+            let copy = [...subCategories]
+
+            const check = copy.filter(item => item == newCat)
+
+            if (check.length) {
+                setErrorMsg('Category Already Exists')
+                setAddCategory(false)
+
+                return
+            }
+            copy.push(newCat)
+            setSubCategories(copy)
+            setAddCategory(false)
+            return
+        }
+        setErrorMsg('Plaese Enter Category Name')
+    }
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: myColors.background }}>
             <StatusbarH />
@@ -243,13 +293,13 @@ export const ItemEdit = ({ navigation, route }) => {
                 {/* <View style={{ height: myHeight(0.6), backgroundColor: myColors.divider }} /> */}
             </View>
 
-            <Spacer paddingT={myHeight(1.5)} />
 
-            <KeyboardAwareScrollView contentContainerStyle={{ flex: 1, paddingHorizontal: myWidth(4) }}>
-
+            <KeyboardAwareScrollView
+                contentContainerStyle={{ flexGrow: 1, paddingHorizontal: myWidth(4) }} showsVerticalScrollIndicator={false}>
                 <Spacer paddingT={myHeight(1.5)} />
+
                 {/* Background Image */}
-                <TouchableOpacity disabled={imageLoading || !isEditMode}
+                <TouchableOpacity disabled={imageLoading}
                     activeOpacity={0.75} onPress={() => {
                         chooseFile()
 
@@ -303,8 +353,556 @@ export const ItemEdit = ({ navigation, route }) => {
 
                 </TouchableOpacity>
 
+                <Spacer paddingT={myHeight(2.5)} />
+                {/*name */}
+                <View>
+                    <Text style={[styles.textCommon,
+                    {
+                        fontFamily: myFonts.heading,
+                        fontSize: myFontSize.xBody2,
+
+                    }]}>Name *</Text>
+                    <Spacer paddingT={myHeight(1)} />
+                    <View style={{
+                        borderRadius: myWidth(1.5),
+                        width: '100%',
+                        paddingHorizontal: myWidth(2),
+                        paddingVertical: myHeight(0.5),
+                        paddingEnd: myWidth(3),
+                        color: myColors.text,
+                        backgroundColor: myColors.offColor7,
+                        // borderWidth: 0.7,
+                        // borderColor: myColors.primaryT
+                    }}>
+
+                        <TextInput placeholder="Item Name"
+                            autoCorrect={false}
+                            maxLength={50}
+                            placeholderTextColor={myColors.offColor}
+                            selectionColor={myColors.primary}
+                            cursorColor={myColors.primaryT}
+                            value={name} onChangeText={setName}
+                            style={{
+                                // flex: 1,
+                                padding: 0,
+                                backgroundColor: myColors.offColor7,
+
+                                // textAlign: 'center'
+                            }}
+                        />
+
+                    </View>
+                </View>
+                <Spacer paddingT={myHeight(2.7)} />
+
+                {/*  Price */}
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={[styles.textCommon,
+                    {
+                        flex: 1,
+                        fontFamily: myFonts.heading,
+                        fontSize: myFontSize.xBody2,
+
+                    }]}>Price *</Text>
+
+
+                    <View style={{
+                        flexDirection: 'row',
+                        borderRadius: myWidth(2),
+                        width: myFontSize.body2 + myWidth(30),
+                        paddingHorizontal: myWidth(3),
+                        color: myColors.text,
+                        backgroundColor: myColors.offColor7,
+                        borderWidth: 0.7,
+                        borderColor: myColors.primaryT
+                    }}>
+
+                        <TextInput placeholder=""
+                            autoCorrect={false}
+                            placeholderTextColor={myColors.text}
+                            selectionColor={myColors.primary}
+                            cursorColor={myColors.primaryT}
+                            editable={false}
+                            style={{
+                                width: 0,
+                                padding: 0,
+                                textAlignVertical: 'center',
+
+                                backgroundColor: myColors.offColor7,
+
+                                // textAlign: 'center'
+                            }}
+                        />
+                        <TextInput placeholder="Ex 50"
+                            autoCorrect={false}
+                            maxLength={8}
+
+                            placeholderTextColor={myColors.offColor}
+                            selectionColor={myColors.primary}
+                            cursorColor={myColors.primaryT}
+                            value={price} onChangeText={setPrice}
+                            keyboardType='numeric'
+                            style={{
+                                flex: 1,
+                                padding: 0,
+                                backgroundColor: myColors.offColor7,
+
+                                // textAlign: 'center'
+                            }}
+                        />
+
+                        <TextInput placeholder=" Rs"
+                            autoCorrect={false}
+                            placeholderTextColor={myColors.text}
+                            selectionColor={myColors.primary}
+                            cursorColor={myColors.primaryT}
+                            editable={false}
+                            style={{
+
+                                padding: 0,
+                                textAlignVertical: 'center',
+                                backgroundColor: myColors.offColor7,
+
+                                // textAlign: 'center'
+                            }}
+                        />
+
+
+                    </View>
+
+                </View>
 
                 <Spacer paddingT={myHeight(2.5)} />
+                {/* Categoty */}
+                <View style={{ marginStart: -myWidth(4), width: myWidth(100) }}>
+                    <Text style={[styles.textCommon,
+                    {
+                        fontFamily: myFonts.heading,
+                        fontSize: myFontSize.xBody2,
+                        paddingStart: myWidth(4),
+
+                    }]}>Select Category *</Text>
+                    <Spacer paddingT={myHeight(1)} />
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={{ paddingStart: myWidth(4) }}>
+
+                        {categories?.map((item, i) =>
+
+                            <View key={i} style={{ paddingBottom: myHeight(1), paddingEnd: myWidth(5) }}>
+                                <TouchableOpacity activeOpacity={0.8} style={{
+                                    flexDirection: 'row', alignItems: 'center', borderRadius: myHeight(15),
+                                    backgroundColor: item.name == selectCat ? myColors.primaryL2 : myColors.background,
+                                    // backgroundColor: myColors.primaryL2,
+                                    padding: myHeight(0.8), elevation: 8
+                                }} onPress={() => setSelectCat(item.name)}>
+                                    <View style={{
+                                        height: myHeight(4.5), width: myHeight(5), borderRadius: myHeight(5),
+                                        backgroundColor: '#00000008',
+                                        // backgroundColor:myColors.background, 
+                                        alignItems: 'center', justifyContent: 'center'
+                                    }}>
+
+                                        <ImageUri height={myHeight(4.2)} width={myHeight(4.2)} resizeMode='contain' uri={item.image} />
+
+                                    </View>
+
+                                    <Spacer paddingEnd={myWidth(2)} />
+                                    <Text
+                                        style={[styles.textCommon, {
+                                            fontSize: myFontSize.body2,
+                                            fontFamily: myFonts.heading,
+                                        }]}>{item.name}</Text>
+                                    <Spacer paddingEnd={myWidth(2.7)} />
+
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                    </ScrollView>
+                </View>
+
+
+                <Spacer paddingT={myHeight(2.5)} />
+                {/*Sub Categoty */}
+                <View style={{ marginStart: -myWidth(4), width: myWidth(100) }}>
+
+                    <View style={{
+                        paddingHorizontal: myWidth(4), alignItems: 'center', flexDirection: 'row',
+                        justifyContent: 'space-between'
+                    }}>
+                        <Text style={[styles.textCommon, {
+
+                            fontFamily: myFonts.heading,
+                            fontSize: myFontSize.xBody2,
+
+                        }]}>Select Sub Category *</Text>
+
+                        {/* See all */}
+                        <TouchableOpacity style={{
+                            flexDirection: 'row', alignItems: 'center', paddingVertical: myHeight(0.4),
+                            paddingStart: myWidth(2)
+                        }} activeOpacity={0.6} onPress={() => setAddCategory(!addCategory)}>
+
+                            <Text
+                                style={[styles.textCommon, {
+                                    fontFamily: myFonts.heading,
+                                    fontSize: myFontSize.xBody,
+
+                                    color: myColors.primaryT
+                                }]}>Add More</Text>
+
+                            <Spacer paddingEnd={myWidth(1)} />
+
+                            <Image style={{
+                                height: myHeight(2), width: myHeight(2), marginStart: myWidth(1),
+                                resizeMode: 'contain', tintColor: myColors.primaryT, transform: [{ rotate: addCategory ? '-90deg' : '90deg' }]
+                            }} source={require('../assets/home_main/home/go.png')} />
+
+                        </TouchableOpacity>
+                    </View>
+
+                    <Collapsible collapsed={!addCategory}>
+                        <Spacer paddingT={myHeight(1.5)} />
+
+                        <View style={{ paddingHorizontal: myWidth(4), flexDirection: 'row', alignItems: 'center' }}>
+
+                            <View style={{
+                                borderRadius: myWidth(1.5),
+
+                                paddingHorizontal: myWidth(2),
+                                // paddingVertical: myHeight(0.5),
+                                paddingEnd: myWidth(3),
+                                color: myColors.text,
+                                flex: 1,
+
+                                backgroundColor: myColors.offColor7,
+                                // borderWidth: 0.7,
+                                // borderColor: myColors.primaryT
+                            }}>
+
+                                <TextInput placeholder="Item Name"
+                                    autoCorrect={false}
+                                    maxLength={20}
+                                    placeholderTextColor={myColors.offColor}
+                                    selectionColor={myColors.primary}
+                                    cursorColor={myColors.primaryT}
+                                    value={newCat} onChangeText={setNewCat}
+                                    style={{
+                                        flex: 1,
+                                        padding: 0,
+                                        backgroundColor: myColors.offColor7,
+
+                                        // textAlign: 'center'
+                                    }}
+                                />
+
+                            </View>
+                            <Spacer paddingEnd={myWidth(4)} />
+                            <TouchableOpacity activeOpacity={0.7} onPress={onAddNewCat} style={{
+                                paddingVertical: myHeight(0.9), marginVertical: myHeight(0.2),
+                                paddingHorizontal: myWidth(5),
+                                backgroundColor: myColors.primaryT, borderRadius: 5
+                            }}>
+                                <Text style={[styles.textCommon,
+                                {
+                                    fontFamily: myFonts.body,
+                                    fontSize: myFontSize.body3,
+                                    color: myColors.background
+
+                                }]}>Add</Text>
+
+                            </TouchableOpacity>
+                        </View>
+                        <Spacer paddingT={myHeight(1)} />
+
+                    </Collapsible>
+                    <View>
+
+                        <Spacer paddingT={myHeight(1)} />
+                        {
+                            subCategories?.length ?
+                                <ScrollView horizontal showsHorizontalScrollIndicator={false}
+                                    contentContainerStyle={{ paddingStart: myWidth(4) }}>
+
+                                    {subCategories?.map((item, i) =>
+
+                                        <View key={i} style={{ paddingBottom: myHeight(1), paddingEnd: myWidth(5) }}>
+                                            <TouchableOpacity activeOpacity={0.8} style={{
+                                                flexDirection: 'row', alignItems: 'center', borderRadius: myHeight(15),
+                                                backgroundColor: item == selectSubCat ? myColors.primaryL2 : myColors.background,
+                                                // backgroundColor: myColors.primaryL2,
+                                                padding: myHeight(1.2), elevation: 8,
+                                                paddingHorizontal: myWidth(4)
+                                            }} onPress={() => setSelectSubCat(item)}>
+
+                                                <Text
+                                                    style={[styles.textCommon, {
+                                                        fontSize: myFontSize.body2,
+                                                        fontFamily: myFonts.heading,
+                                                    }]}>{item}</Text>
+
+                                            </TouchableOpacity>
+                                        </View>
+                                    )}
+                                </ScrollView>
+                                :
+                                <Text
+                                    style={[styles.textCommon, {
+                                        fontFamily: myFonts.heading,
+                                        fontSize: myFontSize.body2,
+
+                                        color: myColors.red,
+                                        paddingStart: myWidth(4)
+                                    }]}>No Sub Category Found Click On Add More</Text>
+                        }
+                    </View>
+
+
+                </View>
+                <Spacer paddingT={myHeight(2.5)} />
+
+                {/* Description */}
+                <View>
+                    <Text style={[styles.textCommon,
+                    {
+                        fontFamily: myFonts.heading,
+                        fontSize: myFontSize.xBody2,
+
+                    }]}>Description</Text>
+                    <Spacer paddingT={myHeight(1)} />
+                    <TextInput placeholder="About Your Item"
+                        multiline={true}
+                        autoCorrect={false}
+                        maxLength={100}
+                        numberOfLines={2}
+                        placeholderTextColor={myColors.offColor}
+                        selectionColor={myColors.primary}
+                        cursorColor={myColors.primaryT}
+                        value={Description} onChangeText={SetDescription}
+                        style={{
+                            height: myFontSize.body * 2 + myHeight(4.5),
+                            textAlignVertical: 'top',
+                            borderRadius: myWidth(2),
+                            width: '100%',
+                            paddingBottom: ios ? myHeight(1.2) : myHeight(100) > 600 ? myHeight(0.8) : myHeight(0.1),
+                            paddingTop: ios ? myHeight(1.2) : myHeight(100) > 600 ? myHeight(1.2) : myHeight(0.3),
+                            fontSize: myFontSize.body,
+                            color: myColors.text,
+                            includeFontPadding: false,
+                            fontFamily: myFonts.body,
+                            paddingHorizontal: myWidth(3),
+                            backgroundColor: myColors.offColor7
+                        }}
+                    />
+                </View>
+
+                <Spacer paddingT={myHeight(2.5)} />
+
+                {/* Options */}
+                <View>
+
+                    <View style={{
+                        alignItems: 'center', flexDirection: 'row',
+                        justifyContent: 'space-between'
+                    }}>
+                        <Text style={[styles.textCommon, {
+
+                            fontFamily: myFonts.heading,
+                            fontSize: myFontSize.xBody2,
+
+                        }]}>Options</Text>
+
+                        {/* See all */}
+                        <TouchableOpacity style={{
+                            flexDirection: 'row', alignItems: 'center', paddingVertical: myHeight(0.4),
+                            paddingStart: myWidth(2)
+                        }} activeOpacity={0.6} onPress={() => setAddCategory(!addCategory)}>
+
+                            <Text
+                                style={[styles.textCommon, {
+                                    fontFamily: myFonts.heading,
+                                    fontSize: myFontSize.xBody,
+
+                                    color: myColors.primaryT
+                                }]}>Add More</Text>
+
+                            <Spacer paddingEnd={myWidth(1)} />
+
+                            <Image style={{
+                                height: myHeight(2), width: myHeight(2), marginStart: myWidth(1),
+                                resizeMode: 'contain', tintColor: myColors.primaryT, transform: [{ rotate: addCategory ? '-90deg' : '90deg' }]
+                            }} source={require('../assets/home_main/home/go.png')} />
+
+                        </TouchableOpacity>
+                    </View>
+
+                    <Collapsible collapsed={!addCategory}>
+                        <Spacer paddingT={myHeight(1.5)} />
+
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+                            <View style={{
+                                borderRadius: myWidth(1.5),
+
+                                paddingHorizontal: myWidth(2),
+                                // paddingVertical: myHeight(0.5),
+                                paddingEnd: myWidth(3),
+                                color: myColors.text,
+                                flex: 1,
+
+                                backgroundColor: myColors.offColor7,
+                                // borderWidth: 0.7,
+                                // borderColor: myColors.primaryT
+                            }}>
+
+                                <TextInput placeholder="Item Name"
+                                    autoCorrect={false}
+                                    maxLength={20}
+                                    placeholderTextColor={myColors.offColor}
+                                    selectionColor={myColors.primary}
+                                    cursorColor={myColors.primaryT}
+                                    value={newCat} onChangeText={setNewCat}
+                                    style={{
+                                        flex: 1,
+                                        padding: 0,
+                                        backgroundColor: myColors.offColor7,
+
+                                        // textAlign: 'center'
+                                    }}
+                                />
+
+                            </View>
+                            <Spacer paddingEnd={myWidth(4)} />
+                            <TouchableOpacity activeOpacity={0.7} onPress={onAddNewCat} style={{
+                                paddingVertical: myHeight(0.9), marginVertical: myHeight(0.2),
+                                paddingHorizontal: myWidth(5),
+                                backgroundColor: myColors.primaryT, borderRadius: 5
+                            }}>
+                                <Text style={[styles.textCommon,
+                                {
+                                    fontFamily: myFonts.body,
+                                    fontSize: myFontSize.body3,
+                                    color: myColors.background
+
+                                }]}>Add</Text>
+
+                            </TouchableOpacity>
+                        </View>
+                        <Spacer paddingT={myHeight(1)} />
+
+                    </Collapsible>
+                    {
+                        options.map((option, i) => {
+
+                            return (
+
+                                <View key={i}>
+                                    <Spacer paddingT={myHeight(1)} />
+
+                                    <View style={{
+                                        height: myHeight(0.5), backgroundColor: myColors.dot
+                                    }} />
+                                    <Spacer paddingT={myHeight(1)} />
+                                    {/* Name & Required */}
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                        <Text style={[styles.textCommon, {
+                                            fontSize: myFontSize.xBody,
+                                            fontFamily: myFonts.heading,
+                                        }]}>{option.name}</Text>
+
+
+                                        <TouchableOpacity
+                                            style={{
+                                                paddingHorizontal: myWidth(4),
+                                                paddingVertical: myHeight(0.2),
+                                                backgroundColor: myColors.red,
+                                                borderRadius: myWidth(1)
+                                            }}>
+                                            <Text style={[styles.textCommon, {
+                                                fontSize: myFontSize.body2,
+                                                fontFamily: myFonts.body,
+                                                color: myColors.background
+                                            }]}>Remove</Text>
+                                        </TouchableOpacity>
+
+
+                                    </View>
+                                    <Spacer paddingT={myHeight(0.6)} />
+
+                                    {
+                                        option.list?.map((item, i) =>
+                                            <View key={i}>
+                                                {/* Divider */}
+                                                {
+                                                    i != 0 &&
+                                                    <View style={{
+                                                        width: '100%', borderTopWidth: myHeight(0.12),
+                                                        borderColor: myColors.dot,
+                                                    }} />
+                                                }
+                                                <Spacer paddingT={myHeight(1)} />
+
+                                                {/* List name & circle */}
+                                                <TouchableOpacity activeOpacity={0.8} style={{
+                                                    flexDirection: 'row', alignItems: 'center'
+                                                }}
+                                                    onPress={() => {
+
+                                                        if (selectItems[option.name]) {
+                                                            setSelectItems({
+                                                                ...selectItems,
+                                                                [option.name]: item
+                                                            })
+                                                            return
+                                                        }
+                                                        const tem = {
+                                                            ...selectItems,
+                                                            [option.name]: item
+                                                        }
+                                                        setSelectItems(tem)
+                                                    }} >
+                                                    {/* list name */}
+                                                    <Text style={[styles.textCommon, {
+                                                        flex: 1,
+                                                        fontSize: myFontSize.xBody,
+                                                        fontFamily: myFonts.body,
+                                                    }]}>{item}</Text>
+
+                                                    {/* bin */}
+                                                    <TouchableOpacity activeOpacity={0.7}
+                                                        onPress={() => null} style={{ paddingHorizontal: myWidth(4), }}>
+                                                        <Image style={{
+                                                            height: myHeight(2.4),
+                                                            width: myHeight(2.4),
+                                                            resizeMode: 'contain',
+                                                            tintColor: myColors.primaryT
+                                                        }} source={require('../assets/home_main/home/bin.png')} />
+                                                    </TouchableOpacity>
+
+                                                    {/* Circle */}
+                                                    {/* <View style={{
+                                                        width: myHeight(2.8), height: myHeight(2.8),
+                                                        borderColor: myColors.primaryT, borderRadius: myHeight(3),
+                                                        // borderWidth: selectItems[option.name] == item ? myHeight(0.9) : myHeight(0.2),
+                                                        borderWidth: myHeight(0.9)
+                                                    }} /> */}
+
+                                                </TouchableOpacity>
+                                                <Spacer paddingT={myHeight(1)} />
+
+                                            </View>
+                                        )
+                                    }
+                                    <Spacer paddingT={myHeight(1)} />
+                                </View>
+                            )
+                        }
+                        )
+                    }
+                </View>
+                <Spacer paddingT={myHeight(2.5)} />
+
+
+
 
 
             </KeyboardAwareScrollView>
@@ -328,9 +926,7 @@ export const ItemEdit = ({ navigation, route }) => {
 
             {isLoading && <Loader />}
             {errorMsg && <MyError message={errorMsg} />}
-            {showCityModal &&
-                <SelectCity showCityModal={setShowCityModal} setCity={setCity} city={city} />
-            }
+
 
         </SafeAreaView>
     )

@@ -185,6 +185,8 @@ export const RestaurantEdit = ({ navigation }) => {
                     noOfRatings: 0,
                     update: true,
                     foodCategory: [],
+                    categories: [],
+                    subCategories: [],
                 }
                 // setAddress(JSON.stringify(newProfile))
                 firestore().collection('restaurants').doc(profile.uid)
