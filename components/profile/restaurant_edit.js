@@ -68,7 +68,7 @@ export const RestaurantEdit = ({ navigation }) => {
     const [DeliveryTime, SetDeliveryTime] = useState(profile.delivery)
     const [Description, SetDescription] = useState(profile.description)
     const [address, setAddress] = useState(profile.location)
-    const [image, setImage] = useState(profile.images[0]);
+    const [image, setImage] = useState(profile.images ? profile.images[0] : null);
     const [locLink, setLocLink] = useState(profile.locationLink);
     const [MenuImages, setMenuImages] = useState(profile.menu ? profile.menu : [])
     const [timmings, setTimmings] = useState(profile.timmings ? profile.timmings : temp)
@@ -96,17 +96,17 @@ export const RestaurantEdit = ({ navigation }) => {
                     setErrorMsg('Please Enter Delivery Charges')
                     return false
                 }
-            }
-            if (DeliveryTime) {
-                if (isNaN(DeliveryTime) || DeliveryTime < 0) {
-                    setErrorMsg('Invalid DeliveryTime')
+                if (DeliveryTime) {
+                    if (isNaN(DeliveryTime) || DeliveryTime < 0) {
+                        setErrorMsg('Invalid DeliveryTime')
+                        return false
+                    }
+                }
+                else {
+
+                    setErrorMsg('Please Enter Delivery Time in Minutes')
                     return false
                 }
-            }
-            else {
-
-                setErrorMsg('Please Enter Delivery Time in Minutes')
-                return false
             }
 
 

@@ -289,7 +289,15 @@ export const ItemEdit = ({ navigation, route }) => {
             firestore().collection('restaurants').doc(profile.uid)
                 .update(newProfile)
                 .then((data) => {
-                    goToDone(newProfile)
+                    const p = `$items/${profile.city}`
+                    firestore().collection('items').doc(item.id).set(NewItem).then(() => {
+
+                        goToDone(newProfile)
+                    })
+                        .catch(err => {
+                            setErrorMsg('Something wrong')
+                            console.log('Internal error while Updating Item', err)
+                        });
                 }).catch(err => {
                     setErrorMsg('Something wrong')
                     console.log('Internal error while Updating profile', err)
@@ -1202,8 +1210,12 @@ export const ItemEdit = ({ navigation, route }) => {
                                                             }
 
                                                             // console.log(copy)
-                                                            options[i] = copy
-                                                            setOptios(options)
+                                                            // options[i] = copy
+                                                            // setOptios(options)
+                                                            // setChange(!change)
+                                                            const newOp = [...options]
+                                                            newOp[i] = copy
+                                                            setOptios(newOp)
                                                             setChange(!change)
 
                                                         }}
@@ -1261,8 +1273,11 @@ export const ItemEdit = ({ navigation, route }) => {
                                                         required: option.required ? false : true
                                                     }
 
-                                                    options[i] = copy
-                                                    setOptios(options)
+
+
+                                                    const newOp = [...options]
+                                                    newOp[i] = copy
+                                                    setOptios(newOp)
                                                     setChange(!change)
                                                 }}>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center', paddingStart: myWidth(1) }}>
@@ -1337,16 +1352,16 @@ export const ItemEdit = ({ navigation, route }) => {
                                                                     cursorColor={myColors.primaryT}
                                                                     value={item}
                                                                     onChangeText={(val) => {
-                                                                        let newList = option.list
+                                                                        let newList = [...option.list]
                                                                         newList[listI] = val
                                                                         const copy = {
                                                                             ...option,
                                                                             list: newList
                                                                         }
 
-                                                                        // console.log(copy)
-                                                                        options[i] = copy
-                                                                        setOptios(options)
+                                                                        const newOp = [...options]
+                                                                        newOp[i] = copy
+                                                                        setOptios(newOp)
                                                                         setChange(!change)
 
                                                                     }}
@@ -1408,11 +1423,18 @@ export const ItemEdit = ({ navigation, route }) => {
                                             <Spacer paddingT={myHeight(1)} />
 
                                             <TouchableOpacity onPress={() => {
-                                                option.list.push('')
-                                                const copy = { ...option }
+                                                let newList = [...option.list, '']
+                                                const copy = {
+                                                    ...option,
+                                                    list: newList
+                                                }
 
-                                                options[i] = copy
-                                                setOptios(options)
+                                                // options[i] = copy
+                                                // setOptios(options)
+                                                // setChange(!change)
+                                                const newOp = [...options]
+                                                newOp[i] = copy
+                                                setOptios(newOp)
                                                 setChange(!change)
 
 

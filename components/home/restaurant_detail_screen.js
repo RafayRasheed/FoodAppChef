@@ -124,7 +124,9 @@ export const RestaurantDetail = ({ navigation, route }) => {
 
             }}
             activeOpacity={0.8}
-            onPress={() => navigation.navigate('ItemSearch', { items: restaurant.foodCategory, restaurant })}>
+            onPress={() =>
+              navigation.navigate('ItemSearch', { items: restaurant.foodCategory, restaurant })
+            }>
             <Image
               style={{
                 width: myHeight(2.6),
@@ -142,7 +144,8 @@ export const RestaurantDetail = ({ navigation, route }) => {
       {/* Content */}
       <View style={{}}>
         {/* Restuarant Info */}
-        <TouchableOpacity activeOpacity={0.96} onPress={() => navigation.navigate('RestaurantMoreDetails')}
+        <TouchableOpacity activeOpacity={0.96}
+          //  onPress={() => navigation.navigate('RestaurantMoreDetails')}
           style={{
             // height:'100%',
             //    position:'absolute', left:0,
@@ -319,6 +322,38 @@ export const RestaurantDetail = ({ navigation, route }) => {
           <Spacer paddingT={myHeight(1.5)} />
         </View>
 
+        <View>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => {
+              navigation.navigate('ItemEdit', { item: {} })
+            }}
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: myHeight(15),
+              backgroundColor: myColors.primaryT,
+              // backgroundColor:myColors.primaryL,
+              paddingVertical: myHeight(1),
+              paddingHorizontal: myWidth(4),
+              marginHorizontal: myWidth(4),
+              elevation: 8,
+            }}>
+            <Text
+              style={[
+                styles.textCommon,
+                {
+                  fontSize: myFontSize.body2,
+                  fontFamily: myFonts.heading,
+                  color: myColors.background,
+                },
+              ]}>
+              {'Add Item'}
+            </Text>
+            <Spacer paddingEnd={myWidth(2.7)} />
+          </TouchableOpacity>
+        </View>
+        <Spacer paddingT={myHeight(1.5)} />
 
         {/* <Spacer paddingT={myHeight(0.3)} /> */}
 
@@ -361,37 +396,7 @@ export const RestaurantDetail = ({ navigation, route }) => {
                 <Spacer paddingEnd={myWidth(2.7)} />
               </TouchableOpacity>
             </View>
-            {/* <View>
-              <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={() => {
-                  navigation.navigate('ItemEdit', { item: {} })
-                }}
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: myHeight(15),
-                  backgroundColor: myColors.primaryT,
-                  // backgroundColor:myColors.primaryL,
-                  paddingVertical: myHeight(1.5),
-                  paddingHorizontal: myWidth(4),
-                  marginEnd: myWidth(2.7),
-                  elevation: 8,
-                }}>
-                <Text
-                  style={[
-                    styles.textCommon,
-                    {
-                      fontSize: myFontSize.body2,
-                      fontFamily: myFonts.heading,
-                      color: myColors.background,
-                    },
-                  ]}>
-                  {'Add Item'}
-                </Text>
-                <Spacer paddingEnd={myWidth(2.7)} />
-              </TouchableOpacity>
-            </View> */}
+
 
             {
 

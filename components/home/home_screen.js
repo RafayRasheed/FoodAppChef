@@ -18,6 +18,7 @@ import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import { RestaurantInfoFull } from './home.component/restaurant_info_full';
 import { setMainCategories } from '../../redux/category_reducer';
+import { setProfile } from '../../redux/profile_reducer';
 
 if (!ios && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true)
@@ -48,6 +49,16 @@ export const HomeScreen = ({ navigation }) => {
     // re.turn (<Test />)
     useEffect(() => {
         getCategories()
+        firestore().collection('restaurants').doc(profile.uid).get()
+            .then((data) => {
+                const pro = data.data()
+
+
+
+                dispatch(setProfile(pro))
+            }).catch(() => {
+                console.log('Error getting profile update')
+            })
     }, [])
 
     // firestore().collection('users').doc(profile.uid).get()
@@ -82,7 +93,7 @@ export const HomeScreen = ({ navigation }) => {
                             fontFamily: myFonts.heading,
                             alignSelf: 'center',
 
-                        }]}>Foodapp<Text style={{ color: myColors.primaryT }}> Chef</Text> </Text>
+                        }]}>Foodapp<Text style={{ color: myColors.primaryT }}> CHEF</Text> </Text>
 
                         <Spacer paddingT={myHeight(3)} />
                         {/* Search */}

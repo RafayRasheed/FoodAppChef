@@ -16,8 +16,11 @@ export const Profile = ({ navigation }) => {
     const { profile } = useSelector(state => state.profile)
     const dispatch = useDispatch()
     function onLogout() {
-        dispatch(deleteProfile())
-        navigation.navigate('AccountNavigator')
+        navigation.replace('AccountNavigator')
+        setTimeout(() => {
+
+            dispatch(deleteProfile())
+        }, 1000)
     }
     const Common = ({ navigate, iconSize, icon, tind = myColors.primaryT, name }) => (
         <View onPress={() => navigation.navigate(navigate)}

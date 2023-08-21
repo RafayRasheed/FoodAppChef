@@ -5,7 +5,7 @@ import { myFontSize, myFonts, myLetSpacing } from "../../../ultils/myFonts"
 import { myColors } from "../../../ultils/myColors"
 // import { Calendar, LocaleConfig } from 'react-native-calendars';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-
+import RNDateTimePicker from '@react-native-community/datetimepicker'
 export const CalenderDate = ({ show, value, content = null, time = true, currDate = null, }) => {
 
     function formatAMPM(date) {
@@ -37,7 +37,7 @@ export const CalenderDate = ({ show, value, content = null, time = true, currDat
             <DateTimePickerModal
                 minimumDate={time ? null : new Date()}
                 accentColor={myColors.primaryT}
-                date={content.current ? content.current : new Date()}
+                date={content.current ? new Date(content.current) : new Date()}
                 buttonTextColorIOS={myColors.primaryT}
                 isVisible={true}
                 modalStyleIOS={{ backgroundColor: '#00000030', margin: 0, marginBottom: ios ? myHeight(1) : 0, }}
@@ -46,6 +46,7 @@ export const CalenderDate = ({ show, value, content = null, time = true, currDat
                 onCancel={hideDatePicker}
 
             />
+            {/* <RNDateTimePicker /> */}
             {/* <DateTimePickerModal
                 isVisible={true}
                 mode="date"
