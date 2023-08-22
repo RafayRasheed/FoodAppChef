@@ -186,7 +186,9 @@ export const RestaurantEdit = ({ navigation }) => {
                 foodCategory: profile.foodCategory ? profile.foodCategory : [],
                 categories: profile.categories ? profile.categories : [],
                 subCategories: profile.subCategories ? profile.subCategories : [],
+                icon: profile.icon ? profile.icon : 'https://firebasestorage.googleapis.com/v0/b/foodapp-edd7e.appspot.com/o/default%2Ficon.png?alt=media&token=575dea1f-76be-4585-8866-963f20ede519'
             }
+
             // setAddress(JSON.stringify(newProfile))
             firestore().collection('restaurants').doc(profile.uid)
                 .update(newProfile)
@@ -196,6 +198,8 @@ export const RestaurantEdit = ({ navigation }) => {
                     // setIsEditMode(false)
                     const msg = profile.update ? 'Updated Successfully' : 'Add Successfully'
                     Alert.alert(msg)
+                    navigation.goBack()
+
 
 
                 }).catch(err => {

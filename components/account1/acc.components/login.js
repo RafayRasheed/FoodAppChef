@@ -127,7 +127,7 @@ export const Login = ({ navigation, showError, showLoading }) => {
     return (
         <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <View style={{
-                flex: 1, width: myWidth(87),
+                flex: 1, width: myWidth(87), height: myHeight(78),
                 justifyContent: 'center', justifyContent: 'space-between',
                 marginVertical: myHeight(4)
             }}>

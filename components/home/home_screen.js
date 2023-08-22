@@ -48,7 +48,6 @@ export const HomeScreen = ({ navigation }) => {
     }
     // re.turn (<Test />)
     useEffect(() => {
-        getCategories()
         firestore().collection('restaurants').doc(profile.uid).get()
             .then((data) => {
                 const pro = data.data()
@@ -59,6 +58,7 @@ export const HomeScreen = ({ navigation }) => {
             }).catch(() => {
                 console.log('Error getting profile update')
             })
+        getCategories()
     }, [])
 
     // firestore().collection('users').doc(profile.uid).get()

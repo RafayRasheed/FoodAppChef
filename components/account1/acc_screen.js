@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState, useEffect } from "react";
+import React, { useLayoutEffect, useState, useEffect, useRef } from "react";
 import { Image, ScrollView } from "react-native";
 import { View, Text, Dimensions, StyleSheet, StatusBar, TouchableOpacity, BackHandler } from "react-native";
 import { errorTime, Loader, MyError, myHeight, myWidth, Spacer, StatusbarH } from "../common";
@@ -8,10 +8,13 @@ import { Login } from "./acc.components/login";
 import { CreateAcc } from "./acc.components/create_acc";
 import Animated, { SlideInDown } from "react-native-reanimated";
 import { SelectCity } from "./select_city";
+import { Modalize } from "react-native-modalize";
 
 // import Animated, { SlideInDown, FadeInUp, FadeOutUp } from 'react-native-reanimated';
 export const AccScreen = ({ navigation }) => {
-    const [onAcc, setOnAcc] = useState(false)
+    const modalizeRef = useRef();
+
+    // const [onAcc, setOnAcc] = useState(false)
     const [onLogin, setOnLogin] = useState(false)
 
     const [errorMsg, setErrorMsg] = useState(null)
@@ -25,17 +28,17 @@ export const AccScreen = ({ navigation }) => {
         setLoading(false)
         setErrorMsg(message)
     }
-    const onBackPress = () => {
-        if (showCityModal) {
-            setShowCityModal(false)
-            return true
-        }
-        if (onAcc) {
-            setOnAcc(false)
-            return true
-        }
-        return false
-    };
+    // const onBackPress = () => {
+    //     if (showCityModal) {
+    //         setShowCityModal(false)
+    //         return true
+    //     }
+    //     if (onAcc) {
+    //         setOnAcc(false)
+    //         return true
+    //     }
+    //     return false
+    // };
 
 
     useEffect(() => {
@@ -48,18 +51,23 @@ export const AccScreen = ({ navigation }) => {
         }
     }, [errorMsg])
 
-    useLayoutEffect(
-        React.useCallback(() => {
+    // useLayoutEffect(
+    //     React.useCallback(() => {
 
-            BackHandler.addEventListener(
-                'hardwareBackPress', onBackPress
-            );
-            return () =>
-                BackHandler.removeEventListener(
-                    'hardwareBackPress', onBackPress
-                );
-        }, [onAcc, showCityModal])
-    );
+    //         BackHandler.addEventListener(
+    //             'hardwareBackPress', onBackPress
+    //         );
+    //         return () =>
+    //             BackHandler.removeEventListener(
+    //                 'hardwareBackPress', onBackPress
+    //             );
+    //     }, [onAcc, showCityModal])
+    // );
+    const onOpen = () => {
+        modalizeRef.current?.open();
+    };
+
+
     return (
         <>
             <View style={styles.container}>
@@ -86,7 +94,7 @@ export const AccScreen = ({ navigation }) => {
                     {/* B Create Acc */}
                     <TouchableOpacity activeOpacity={0.8} style={[styles.bigButton, { backgroundColor: myColors.primary }]}
                         onPress={() => {
-                            setOnAcc(true)
+                            onOpen()
                             setOnLogin(false)
                         }}
                     >
@@ -97,7 +105,7 @@ export const AccScreen = ({ navigation }) => {
                     {/* B Create Login */}
                     <TouchableOpacity activeOpacity={0.8} style={[styles.bigButton, { backgroundColor: myColors.lightGree }]}
                         onPress={() => {
-                            setOnAcc(true)
+                            onOpen()
                             setOnLogin(true)
                             // navigation.navigate('ForgetPass')
                         }}>
@@ -114,61 +122,48 @@ export const AccScreen = ({ navigation }) => {
                 </View>
 
 
+                <Modalize ref={modalizeRef}
+                >
+                    <TouchableOpacity activeOpacity={1} style={{ flex: 1, alignItems: 'center' }}>
+                        <Spacer paddingT={myHeight(1)} />
+                        {/* Back line */}
+                        {/* <View style={{ width: myWidth(15), height: myHeight(0.8), borderRadius: 20, backgroundColor: myColors.dot }} /> */}
 
+                        <Spacer paddingT={myHeight(3)} />
+                        {/* Navigator */}
+                        <View style={{ alignSelf: 'flex-start', flexDirection: 'row' }}>
+                            <Spacer paddingEnd={myWidth(9.6)} />
+                            <View style={{ flexDirection: 'row', width: myWidth(63.5), justifyContent: 'space-between' }}>
+                                <TouchableOpacity activeOpacity={0.7} onPress={() => setOnLogin(false)} style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text style={{ fontSize: myFontSize.xBody, fontFamily: myFonts.heading, color: onLogin ? myColors.textL4 : myColors.primary }}>Create Account</Text>
+                                    <Spacer paddingT={myHeight(0.2)} />
+                                    <View style={{ width: '80%', height: 3, backgroundColor: onLogin ? myColors.background : myColors.primary }} />
+                                </TouchableOpacity>
+                                <TouchableOpacity activeOpacity={0.7} onPress={() => setOnLogin(true)} style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text style={{ fontSize: myFontSize.xBody, fontFamily: myFonts.heading, color: onLogin ? myColors.primary : myColors.textL4 }}>Login</Text>
+                                    <Spacer paddingT={myHeight(0.2)} />
+                                    <View style={{ width: '80%', height: 3, backgroundColor: onLogin ? myColors.primary : myColors.background }} />
+                                </TouchableOpacity>
+                            </View>
+                        </View>
 
-
-                {
-                    onAcc &&
-                    <TouchableOpacity activeOpacity={1} onPress={() => setOnAcc(false)}
-                        style={{
-                            height: '100%', width: '100%', position: 'absolute', zIndex: 2,
-                            backgroundColor: '#00000050', justifyContent: 'flex-end'
-                        }}>
-
-                        <Animated.View entering={SlideInDown}
-                            style={{
-                                minHeight: myHeight(88), width: myWidth(100),
-                                backgroundColor: myColors.background, borderTopStartRadius: 36,
-                                borderTopEndRadius: 36,
-                            }}>
-                            <TouchableOpacity activeOpacity={1} style={{ flex: 1, alignItems: 'center' }}>
-                                <Spacer paddingT={myHeight(1)} />
-                                {/* Back line */}
-                                <View style={{ width: myWidth(15), height: myHeight(0.8), borderRadius: 20, backgroundColor: myColors.dot }} />
-
-                                <Spacer paddingT={myHeight(3)} />
-                                {/* Navigator */}
-                                <View style={{ alignSelf: 'flex-start', flexDirection: 'row' }}>
-                                    <Spacer paddingEnd={myWidth(9.6)} />
-                                    <View style={{ flexDirection: 'row', width: myWidth(63.5), justifyContent: 'space-between' }}>
-                                        <TouchableOpacity activeOpacity={0.7} onPress={() => setOnLogin(false)} style={{ justifyContent: 'center', alignItems: 'center' }}>
-                                            <Text style={{ fontSize: myFontSize.xBody, fontFamily: myFonts.heading, color: onLogin ? myColors.textL4 : myColors.primary }}>Create Account</Text>
-                                            <Spacer paddingT={myHeight(0.2)} />
-                                            <View style={{ width: '80%', height: 3, backgroundColor: onLogin ? myColors.background : myColors.primary }} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity activeOpacity={0.7} onPress={() => setOnLogin(true)} style={{ justifyContent: 'center', alignItems: 'center' }}>
-                                            <Text style={{ fontSize: myFontSize.xBody, fontFamily: myFonts.heading, color: onLogin ? myColors.primary : myColors.textL4 }}>Login</Text>
-                                            <Spacer paddingT={myHeight(0.2)} />
-                                            <View style={{ width: '80%', height: 3, backgroundColor: onLogin ? myColors.primary : myColors.background }} />
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-
-                                {/* <Spacer paddingT={myHeight(4.4)}/> */}
-                                {onLogin ?
-                                    <Login navigation={navigation} showError={showError} showLoading={setLoading} />
-                                    :
-                                    <CreateAcc navigate={navigation.navigate} showError={showError}
-                                        showLoading={setLoading} city={city} setShowCityModal={setShowCityModal} />}
-                                {/* <Spacer paddingT={myHeight(4)}/> */}
-                            </TouchableOpacity>
-
-                        </Animated.View>
+                        {/* <Spacer paddingT={myHeight(4.4)}/> */}
+                        {onLogin ?
+                            <Login navigation={navigation} showError={showError} showLoading={setLoading} />
+                            :
+                            <CreateAcc navigate={navigation.navigate} showError={showError}
+                                showLoading={setLoading} city={city} setShowCityModal={setShowCityModal} />}
+                        {/* <Spacer paddingT={myHeight(4)}/> */}
                     </TouchableOpacity>
-                }
+
+                    {/* <View style={{ width: '100%', height: '100%', position: 'absolute', backgroundColor: 'red' }} /> */}
+                    {loading && <Loader />}
+                </Modalize>
 
 
-                {loading && <Loader />}
+
+
+
                 {errorMsg && <MyError message={errorMsg} />}
 
             </View>

@@ -174,6 +174,7 @@ export const ItemEdit = ({ navigation, route }) => {
 
         setIsLoading(false)
         disptach(setProfile(newP))
+        navigation.goBack()
         const msg = item.id ? 'Updated Successfully' : 'Add Successfully'
         Alert.alert(msg)
 
@@ -194,6 +195,7 @@ export const ItemEdit = ({ navigation, route }) => {
                 description: Description ? Description : null,
                 id: id,
                 name: name,
+                city: profile.city,
                 image: image,
                 rating: item.rating ? item.rating : 0,
                 noOfRatings: item.noOfRatings ? item.noOfRatings : 0,

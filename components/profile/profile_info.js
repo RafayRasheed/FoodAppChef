@@ -109,6 +109,8 @@ export const ProfileInfo = ({ navigation }) => {
         setIsEditMode(false)
         setIsLoading(false)
         Alert.alert('Updated Successfully')
+        navigation.goBack()
+
 
 
     }

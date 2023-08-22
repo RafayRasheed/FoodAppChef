@@ -122,7 +122,7 @@ export const CreateAcc = ({ navigate, showError, showLoading, city, setShowCityM
 
     return (
         <View style={{
-            flex: 1, width: myWidth(87),
+            flex: 1, width: myWidth(87), height: myHeight(78),
             justifyContent: 'center', justifyContent: 'space-between',
             marginVertical: myHeight(4)
         }}>
