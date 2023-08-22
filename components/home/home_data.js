@@ -136,6 +136,7 @@ export const Restaurants = [
         name: "John",
         rating: 5,
         date: '20/5/2019',
+
         review: "I had an incredible dining expecious, and the presentation was top-notch. The staff was friendly and attentive, ensuring that everything was perfect. I highly recommend this place for a memorable culinary experience."
       },
       {
