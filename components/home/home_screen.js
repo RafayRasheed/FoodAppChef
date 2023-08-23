@@ -53,7 +53,7 @@ export const HomeScreen = ({ navigation }) => {
                 const pro = data.data()
 
 
-
+                console.log(JSON.stringify(pro))
                 dispatch(setProfile(pro))
             }).catch(() => {
                 console.log('Error getting profile update')

@@ -182,6 +182,7 @@ export const RestaurantEdit = ({ navigation }) => {
                 timmings: timmings,
                 rating: profile.rating ? profile.rating : 0,
                 noOfRatings: profile.noOfRatings ? profile.noOfRatings : 0,
+                reviews: profile.reviews ? [...profile.reviews] : [],
                 update: true,
                 foodCategory: profile.foodCategory ? profile.foodCategory : [],
                 categories: profile.categories ? profile.categories : [],

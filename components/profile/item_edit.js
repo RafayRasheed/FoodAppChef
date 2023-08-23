@@ -160,9 +160,9 @@ export const ItemEdit = ({ navigation, route }) => {
             setErrorMsg('Please Select Sub Category')
             return false
         }
-        if (!checkDescription()) {
-            return false
-        }
+        // if (!checkDescription()) {
+        //     return false
+        // }
         if (!checkOptions()) {
             return false
         }
