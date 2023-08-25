@@ -11,6 +11,7 @@ import { myColors } from '../../../ultils/myColors';
 import { Spacer, myHeight, myWidth } from '../../common';
 import { myFontSize, myFonts, myLetSpacing } from '../../../ultils/myFonts';
 import { TouchableOpacity } from 'react-native';
+import { ImageUri } from '../../common/image_uri';
 
 const wid = Dimensions.get('window').width;
 
@@ -44,18 +45,19 @@ export const ImagesShortViewer = ({ navigate, images }) => {
         {
           images.map((image, i) =>
             <TouchableOpacity activeOpacity={0.97}
+              // disabled
               onPress={() => navigate('ImageViewer', { images, i })} key={i} style={{ width: myWidth(100), }}>
-              <Image
-                // onLoadEnd={handlePressIn}
-                style={{
-                  width: '100%',
-                  height: myHeight(28),
-                  resizeMode: "cover",
-                  borderBottomLeftRadius: myWidth(5),
-                  borderBottomRightRadius: myWidth(5),
-                }}
-                source={image}
-              />
+              <View style={{
+                width: '100%',
+                height: myHeight(28),
+                borderBottomLeftRadius: myWidth(5),
+                borderBottomRightRadius: myWidth(5),
+                overflow: 'hidden'
+              }}>
+                <ImageUri width={'100%'} height={'100%'} resizeMode='cover' uri={image} />
+
+              </View>
+
             </TouchableOpacity>
           )
         }
@@ -76,7 +78,7 @@ export const ImagesShortViewer = ({ navigate, images }) => {
 
               <View style={{
                 height: myHeight(1.2), width: myHeight(1.2), borderRadius: myHeight(1),
-                backgroundColor: myColors.dot, margin: myHeight(0.4)
+                backgroundColor: myColors.offColor, margin: myHeight(0.4)
               }} />
             </View>
           )

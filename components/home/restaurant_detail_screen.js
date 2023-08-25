@@ -145,12 +145,12 @@ export const RestaurantDetail = ({ navigation, route }) => {
       <View style={{}}>
         {/* Restuarant Info */}
         <TouchableOpacity activeOpacity={0.96}
-          //  onPress={() => navigation.navigate('RestaurantMoreDetails')}
+          onPress={() => navigation.navigate('RestaurantMoreDetails', { restaurant })}
           style={{
             // height:'100%',
             //    position:'absolute', left:0,
             backgroundColor: myColors.background,
-            marginTop: -myHeight(5),
+            marginTop: -myHeight(8),
             borderRadius: myHeight(3),
             borderTopStartRadius: myHeight(3),
             borderTopEndRadius: myHeight(3),
@@ -331,7 +331,7 @@ export const RestaurantDetail = ({ navigation, route }) => {
             style={{
               alignItems: 'center',
               justifyContent: 'center',
-              borderRadius: myHeight(15),
+              borderRadius: myHeight(1),
               backgroundColor: myColors.primaryT,
               // backgroundColor:myColors.primaryL,
               paddingVertical: myHeight(1),
@@ -353,7 +353,7 @@ export const RestaurantDetail = ({ navigation, route }) => {
             <Spacer paddingEnd={myWidth(2.7)} />
           </TouchableOpacity>
         </View>
-        <Spacer paddingT={myHeight(1.5)} />
+        <Spacer paddingT={myHeight(1)} />
 
         {/* <Spacer paddingT={myHeight(0.3)} /> */}
 
@@ -465,7 +465,7 @@ export const RestaurantDetail = ({ navigation, route }) => {
 
                       }}
                       key={i} activeOpacity={0.9}
-                    // onPress={() => navigation.navigate('ItemDetails', { item, restaurant })}
+                      onPress={() => navigation.navigate('ItemDetails', { item, restaurant })}
                     >
 
                       <ItemInfo item={item} navigate={navigation.navigate} />
@@ -492,7 +492,7 @@ export const RestaurantDetail = ({ navigation, route }) => {
                           }}
                           key={i}
                           activeOpacity={0.9}
-                        // onPress={() => navigation.navigate('ItemDetails', { item, restaurant })}
+                          onPress={() => navigation.navigate('ItemDetails', { item, restaurant })}
                         >
 
                           <ItemInfo item={item} navigate={navigation.navigate} />

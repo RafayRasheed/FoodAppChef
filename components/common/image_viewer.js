@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, Image, View, Text, FlatList, Modal, UIManager, LayoutAnimation, StatusBar } from 'react-native'
-import { MyError, Spacer, StatusBarBlack, ios, myHeight, myWidth } from '../common';
+import { MyError, Spacer, StatusBarBlack, StatusbarH, ios, myHeight, myWidth } from '../common';
 import { myColors } from '../../ultils/myColors';
 import { myFontSize, myFonts, myLetSpacing } from '../../ultils/myFonts';
 import { ImageZoom } from '@likashefqet/react-native-image-zoom';
@@ -33,9 +33,8 @@ export const ImageViewer = ({ navigation, route }) => {
         , [])
     return (
         <SafeAreaView style={styles.container}>
-            <StatusBarBlack />
             <View style={{
-                position: 'absolute', top: myHeight(1), zIndex: 10, width: '100%',
+                position: 'absolute', top: myHeight(1) + StatusBar.currentHeight, zIndex: 10, width: '100%',
                 flexDirection: 'row', alignItems: 'center', paddingHorizontal: myWidth(4),
                 //  backgroundColor: '#ffffff20'
             }}>
@@ -92,10 +91,13 @@ export const ImageViewer = ({ navigation, route }) => {
                                 style={{
                                     width: myWidth(100),
                                     resizeMode: "contain",
+                                    height: 10000
+
                                     //   borderBottomLeftRadius: myWidth(5),
                                     //   borderBottomRightRadius: myWidth(5),
                                 }}
-                                source={image}
+                                source={{ uri: image }}
+
                             />
                         </View>
                     )

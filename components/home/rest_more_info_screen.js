@@ -12,13 +12,15 @@ import { ImagesShortViewer } from './home.component/images_short_viewer';
 import Collapsible from 'react-native-collapsible';
 import { Stars } from './home.component/star';
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
+import { ImageUri } from '../common/image_uri';
 
 export const RestaurantMoreDetails = ({ navigation, route }) => {
     const { restaurant } = route.params;
     const [timmingClose, setTimingClose] = useState(true)
     const [infoClose, setInfoClose] = useState(true)
     const [menuClose, setMenuClose] = useState(true)
-
+    const dayIndex = new Date().getDay()
+    const todayTime = restaurant.timmings[dayIndex]
 
     const [RatingModal, setRatinModal] = useState(false)
     const [starI, setStarI] = useState(undefined)
@@ -121,7 +123,7 @@ export const RestaurantMoreDetails = ({ navigation, route }) => {
                             includeFontPadding: false,
                             padding: 0
                         }}
-                        >{'Open at 9:00 AM'}</Text>
+                        >{todayTime.open ? `Open    ${todayTime.startTime} - ${todayTime.endTime}` : 'Closed'}</Text>
                         {/*Go */}
                         <View>
                             <Image style={{
@@ -142,29 +144,25 @@ export const RestaurantMoreDetails = ({ navigation, route }) => {
                             restaurant.timmings?.map((item, i) =>
                                 <View key={i}>
                                     <Spacer paddingT={myHeight(1)} />
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
 
-                                    <Text numberOfLines={2} style={[styles.textCommon, {
-                                        flex: 1,
-                                        fontSize: myFontSize.body3,
-                                        fontFamily: myFonts.bodyBold,
+                                        <Text numberOfLines={2} style={[styles.textCommon, {
+                                            fontSize: myFontSize.body3,
+                                            fontFamily: myFonts.heading,
+                                            width: myFontSize.body3 + myWidth(10)
 
-                                    }]}
-                                    >{item.day}</Text>
+                                        }]}
+                                        >{item.day}</Text>
+                                        <Text numberOfLines={2} style={[styles.textCommon, {
+                                            fontSize: myFontSize.body2,
+                                            fontFamily: myFonts.bodyBold,
 
-                                    <Spacer paddingT={myHeight(0.5)} />
+                                        }]}
+                                        >{item.open ? `${item.startTime} - ${item.endTime}` : 'Closed'}</Text>
+                                    </View>
 
-                                    {
-                                        item.times?.map((time, key) =>
-                                            <Text key={key} numberOfLines={2} style={[styles.textCommon, {
-                                                flex: 1,
-                                                fontSize: myFontSize.body,
-                                                fontFamily: myFonts.bodyBold,
-                                                color: myColors.textL
 
-                                            }]}
-                                            >{time}</Text>
-                                        )
-                                    }
+
                                 </View>
                             )
                         }
@@ -267,123 +265,133 @@ export const RestaurantMoreDetails = ({ navigation, route }) => {
                         </View>
 
                     </Collapsible>
-
-                    <Spacer paddingT={myHeight(2)} />
-                    {/* Divider */}
-                    <View style={{
-                        borderTopWidth: myHeight(0.13), alignSelf: 'flex-end',
-                        borderColor: myColors.offColor, width: "85%"
-                    }} />
-
-                    <Spacer paddingT={myHeight(2)} />
-                    {/* Menu && go */}
-                    <TouchableOpacity activeOpacity={0.85} onPress={() => setMenuClose(!menuClose)}
-                        style={{ flexDirection: "row", alignItems: 'center' }}>
-                        {/* Clock */}
-                        <View style={{ width: myWidth(15), alignItems: 'center' }}>
-                            {/* clock */}
-                            <Image style={{
-                                height: myHeight(2.8),
-                                width: myHeight(2.8),
-                                resizeMode: 'contain',
-                                tintColor: myColors.primaryT
-                            }} source={require('../assets/home_main/home/menu1.png')} />
-                        </View>
-
-                        {/* Menu */}
-                        <Text numberOfLines={2} style={{
-                            flex: 1,
-                            fontSize: myFontSize.xBody,
-                            fontFamily: myFonts.bodyBold,
-                            color: myColors.text,
-                            letterSpacing: myLetSpacing.common,
-                            includeFontPadding: false,
-                            padding: 0
-                        }}
-                        >Menu</Text>
-                        {/*Go */}
+                    {
+                        restaurant.menu.length > 0 &&
                         <View>
-                            <Image style={{
-                                height: myHeight(2.6),
-                                width: myHeight(2.6),
-                                resizeMode: 'contain',
-                                transform: [{ rotate: menuClose ? '90deg' : '270deg' }],
-                                tintColor: menuClose ? myColors.primaryT : myColors.offColor
-                            }} source={
-                                require('../assets/home_main/home/go.png')
-                            } />
+                            <Spacer paddingT={myHeight(2)} />
+                            {/* Divider */}
+                            <View style={{
+                                borderTopWidth: myHeight(0.13), alignSelf: 'flex-end',
+                                borderColor: myColors.offColor, width: "85%"
+                            }} />
+
+                            <Spacer paddingT={myHeight(2)} />
+                            {/* Menu && go */}
+                            <TouchableOpacity activeOpacity={0.85} onPress={() => setMenuClose(!menuClose)}
+                                style={{ flexDirection: "row", alignItems: 'center' }}>
+                                {/* Clock */}
+                                <View style={{ width: myWidth(15), alignItems: 'center' }}>
+                                    {/* clock */}
+                                    <Image style={{
+                                        height: myHeight(2.8),
+                                        width: myHeight(2.8),
+                                        resizeMode: 'contain',
+                                        tintColor: myColors.primaryT
+                                    }} source={require('../assets/home_main/home/menu1.png')} />
+                                </View>
+
+                                {/* Menu */}
+                                <Text numberOfLines={2} style={{
+                                    flex: 1,
+                                    fontSize: myFontSize.xBody,
+                                    fontFamily: myFonts.bodyBold,
+                                    color: myColors.text,
+                                    letterSpacing: myLetSpacing.common,
+                                    includeFontPadding: false,
+                                    padding: 0
+                                }}
+                                >Menu</Text>
+                                {/*Go */}
+                                <View>
+                                    <Image style={{
+                                        height: myHeight(2.6),
+                                        width: myHeight(2.6),
+                                        resizeMode: 'contain',
+                                        transform: [{ rotate: menuClose ? '90deg' : '270deg' }],
+                                        tintColor: menuClose ? myColors.primaryT : myColors.offColor
+                                    }} source={
+                                        require('../assets/home_main/home/go.png')
+                                    } />
+                                </View>
+                                <Spacer paddingEnd={myWidth(4)} />
+                            </TouchableOpacity>
+                            {/* Menu Collapse */}
+                            <Collapsible style={{ paddingStart: myWidth(15), paddingEnd: myWidth(4) }}
+                                collapsed={menuClose}>
+                                <Spacer paddingT={myHeight(1)} />
+                                <ScrollView showsHorizontalScrollIndicator={false} horizontal contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+                                    {
+                                        restaurant.menu?.map((image, i) =>
+                                            <TouchableOpacity activeOpacity={0.97}
+                                                onPress={() => navigation.navigate('ImageViewer', { images: restaurant.menu, i })} key={i}
+                                                style={{ marginHorizontal: myWidth(3) }}>
+                                                <Image
+                                                    // onLoadEnd={handlePressIn}
+                                                    style={{
+                                                        height: myHeight(15),
+                                                        // width: 'auto',
+                                                        aspectRatio: 1,
+                                                        resizeMode: "contain",
+                                                    }}
+                                                    source={{ uri: image }}
+
+                                                />
+                                            </TouchableOpacity>
+                                        )
+                                    }
+                                </ScrollView>
+                            </Collapsible>
                         </View>
-                        <Spacer paddingEnd={myWidth(4)} />
-                    </TouchableOpacity>
-                    {/* Menu Collapse */}
-                    <Collapsible style={{ paddingStart: myWidth(15), paddingEnd: myWidth(4) }}
-                        collapsed={menuClose}>
-                        <Spacer paddingT={myHeight(1)} />
-                        <ScrollView showsHorizontalScrollIndicator={false} horizontal contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
-                            {
-                                restaurant.menu?.map((image, i) =>
-                                    <TouchableOpacity activeOpacity={0.97}
-                                        onPress={() => navigation.navigate('ImageViewer', { images: restaurant.menu, i })} key={i}
-                                        style={{ marginHorizontal: myWidth(3) }}>
-                                        <Image
-                                            // onLoadEnd={handlePressIn}
-                                            style={{
-                                                height: myHeight(15),
-                                                // width: 'auto',
-                                                aspectRatio: 1,
-                                                resizeMode: "contain",
-                                            }}
-                                            source={image}
-                                        />
-                                    </TouchableOpacity>
-                                )
-                            }
-                        </ScrollView>
-                    </Collapsible>
+                    }
+                    {
+                        !restaurant.homeDelivery &&
+                        <View>
 
-                    <Spacer paddingT={myHeight(2)} />
-                    {/* Divider */}
-                    <View style={{
-                        borderTopWidth: myHeight(0.13), alignSelf: 'flex-end',
-                        borderColor: myColors.offColor, width: "85%"
-                    }} />
-                    <Spacer paddingT={myHeight(2)} />
-                    {/* Delivry & charges */}
-                    <View style={{ flexDirection: "row", }}>
-                        <View style={{ width: myWidth(15), alignItems: 'center' }}>
-                            {/* loc */}
-                            <Image style={{
-                                height: myHeight(3),
-                                width: myHeight(3),
-                                resizeMode: 'contain',
-                                tintColor: myColors.primaryT
-                            }} source={require('../assets/home_main/home/bike.png')} />
+                            <Spacer paddingT={myHeight(2)} />
+                            {/* Divider */}
+                            <View style={{
+                                borderTopWidth: myHeight(0.13), alignSelf: 'flex-end',
+                                borderColor: myColors.offColor, width: "85%"
+                            }} />
+                            <Spacer paddingT={myHeight(2)} />
+                            {/* Delivry & charges */}
+                            <View style={{ flexDirection: "row", }}>
+                                <View style={{ width: myWidth(15), alignItems: 'center' }}>
+                                    {/* loc */}
+                                    <Image style={{
+                                        height: myHeight(3),
+                                        width: myHeight(3),
+                                        resizeMode: 'contain',
+                                        tintColor: myColors.primaryT
+                                    }} source={require('../assets/home_main/home/bike.png')} />
+                                </View>
+                                {/* Time */}
+                                <Text numberOfLines={2} style={{
+                                    flex: 1,
+                                    fontSize: myFontSize.xBody,
+                                    fontFamily: myFonts.bodyBold,
+                                    color: myColors.text,
+                                    letterSpacing: myLetSpacing.common,
+                                    includeFontPadding: false,
+                                    padding: 0
+                                }}
+                                >Delivery in {restaurant.delivery} minutes</Text>
+
+                                <Spacer paddingEnd={myWidth(1)} />
+                                {/* Open */}
+
+                                <Text style={[styles.textCommon, {
+
+                                    fontSize: myFontSize.body3,
+                                    fontFamily: myFonts.bodyBold,
+                                    // color: myColors.primaryT
+
+                                }]}
+                                > {restaurant.deliveryCharges ? `Rs ${restaurant.deliveryCharges}` : 'Free'}</Text>
+                                <Spacer paddingEnd={myWidth(4)} />
+                            </View>
                         </View>
-                        {/* Time */}
-                        <Text numberOfLines={2} style={{
-                            flex: 1,
-                            fontSize: myFontSize.xBody,
-                            fontFamily: myFonts.bodyBold,
-                            color: myColors.text,
-                            letterSpacing: myLetSpacing.common,
-                            includeFontPadding: false,
-                            padding: 0
-                        }}
-                        >Delivery in {restaurant.delivery} minutes</Text>
-
-                        <Spacer paddingEnd={myWidth(1)} />
-                        {/* Open */}
-
-                        <Text style={[styles.textCommon, {
-
-                            fontSize: myFontSize.body3,
-                            fontFamily: myFonts.bodyBold,
-                            // color: myColors.primaryT
-
-                        }]}
-                        >{restaurant.deliveryCharges}</Text>
-                        <Spacer paddingEnd={myWidth(4)} />
-                    </View>
+                    }
 
                     <Spacer paddingT={myHeight(2)} />
 
@@ -419,7 +427,7 @@ export const RestaurantMoreDetails = ({ navigation, route }) => {
                         }}
                         >{`${restaurant.rating}   Reviews (${restaurant.noOfRatings})`}</Text>
 
-                        {/* Open */}
+                        {/* Open
                         <TouchableOpacity activeOpacity={0.85} onPress={() => setRatinModal(true)}>
 
                             <Text style={[styles.textCommon, {
@@ -431,7 +439,7 @@ export const RestaurantMoreDetails = ({ navigation, route }) => {
                             }]}
                             >Rate Us</Text>
                         </TouchableOpacity>
-                        <Spacer paddingEnd={myWidth(4)} />
+                        <Spacer paddingEnd={myWidth(4)} /> */}
                     </TouchableOpacity>
 
                     <Spacer paddingT={myHeight(2)} />
@@ -467,17 +475,20 @@ export const RestaurantMoreDetails = ({ navigation, route }) => {
 
                         <Spacer paddingEnd={myWidth(1)} />
                         {/* Open */}
-                        <TouchableOpacity activeOpacity={0.85} onPress={() => Linking.openURL(restaurant.locationLink)}>
+                        {
+                            restaurant.locationLink &&
+                            <TouchableOpacity activeOpacity={0.85} onPress={() => Linking.openURL(restaurant.locationLink)}>
 
-                            <Text style={[styles.textCommon, {
+                                <Text style={[styles.textCommon, {
 
-                                fontSize: myFontSize.body3,
-                                fontFamily: myFonts.bodyBold,
-                                color: myColors.primaryT
+                                    fontSize: myFontSize.body3,
+                                    fontFamily: myFonts.bodyBold,
+                                    color: myColors.primaryT
 
-                            }]}
-                            >Open</Text>
-                        </TouchableOpacity>
+                                }]}
+                                >Open</Text>
+                            </TouchableOpacity>
+                        }
                         <Spacer paddingEnd={myWidth(4)} />
                     </View>
 
@@ -487,63 +498,70 @@ export const RestaurantMoreDetails = ({ navigation, route }) => {
                     {/* Divider */}
                     <View style={{ borderTopWidth: myHeight(0.13), borderColor: myColors.offColor, width: "100%" }} />
 
-                    <Spacer paddingT={myHeight(1)} />
-                    {/* Reviews */}
-                    <View style={{ paddingHorizontal: myWidth(4) }}>
-                        <Text numberOfLines={2} style={[styles.textCommon, {
-                            fontSize: myFontSize.xxBody,
-                            fontFamily: myFonts.bodyBold,
-                            paddingEnd: myWidth(3)
-                        }]}>Reviews</Text>
-                        {/* <Spacer paddingT={myHeight(0.5)} /> */}
 
-                        <FlatList
-                            showsVerticalScrollIndicator={false}
-                            scrollEnabled={false}
-                            data={restaurant.reviews}
-                            ItemSeparatorComponent={() =>
-                                <View style={{ borderTopWidth: myHeight(0.08), borderColor: myColors.offColor, width: "100%" }} />
-                            }
-                            renderItem={(data, i) => {
-                                const item = data.item
+                    <View>
+                        <Spacer paddingT={myHeight(1)} />
+                        {/* Reviews */}
+                        <View style={{ paddingHorizontal: myWidth(4) }}>
+                            <Text numberOfLines={2} style={[styles.textCommon, {
+                                fontSize: myFontSize.xxBody,
+                                fontFamily: myFonts.bodyBold,
+                                paddingEnd: myWidth(3)
+                            }]}>Reviews</Text>
+                            {/* <Spacer paddingT={myHeight(0.5)} /> */}
 
-                                return (
-                                    <View key={data.index}>
-                                        <Spacer paddingT={myHeight(1.5)} />
+                            <FlatList
+                                showsVerticalScrollIndicator={false}
+                                scrollEnabled={false}
+                                data={restaurant.reviews}
+                                ItemSeparatorComponent={() =>
+                                    <View style={{ borderTopWidth: myHeight(0.08), borderColor: myColors.offColor, width: "100%" }} />
+                                }
+                                renderItem={(data, i) => {
+                                    const item = data.item
+
+                                    return (
+                                        <View key={data.index}>
+                                            <Spacer paddingT={myHeight(1.5)} />
 
 
-                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            {/* <Spacer paddingEnd={myWidth(2)} /> */}
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                {/* <Spacer paddingEnd={myWidth(2)} /> */}
+                                                <Text style={[styles.textCommon, {
+                                                    fontSize: myFontSize.body3,
+                                                    fontFamily: myFonts.heading,
+                                                    paddingEnd: myWidth(3)
+                                                }]}>{item.name}</Text>
+
+                                                <Text style={[styles.textCommon, {
+                                                    flex: 1,
+                                                    // textAlign: 'right',
+                                                    fontSize: myFontSize.body2,
+                                                    fontFamily: myFonts.body,
+                                                }]}>{item.date}</Text>
+                                                {item.rating &&
+                                                    <Stars num={item.rating} />
+                                                }
+
+                                            </View>
+                                            <Spacer paddingT={myHeight(0.5)} />
                                             <Text style={[styles.textCommon, {
-                                                fontSize: myFontSize.body3,
-                                                fontFamily: myFonts.heading,
-                                                paddingEnd: myWidth(3)
-                                            }]}>{item.name}</Text>
-
-                                            <Text style={[styles.textCommon, {
-                                                flex: 1,
-                                                // textAlign: 'right',
-                                                fontSize: myFontSize.body2,
+                                                fontSize: myFontSize.body,
                                                 fontFamily: myFonts.body,
-                                            }]}>{item.date}</Text>
-                                            <Stars num={item.rating} />
+                                                paddingEnd: myWidth(3)
+                                            }]}>{item.review}</Text>
+
+                                            <Spacer paddingT={myHeight(1.8)} />
 
                                         </View>
-                                        <Spacer paddingT={myHeight(0.5)} />
-                                        <Text style={[styles.textCommon, {
-                                            fontSize: myFontSize.body,
-                                            fontFamily: myFonts.body,
-                                            paddingEnd: myWidth(3)
-                                        }]}>{item.review}</Text>
+                                    )
+                                }
+                                } />
 
-                                        <Spacer paddingT={myHeight(1.8)} />
-
-                                    </View>
-                                )
-                            }
-                            } />
+                        </View>
 
                     </View>
+
                     <Spacer paddingT={myHeight(4)} />
 
                 </ScrollView>
@@ -568,7 +586,7 @@ export const RestaurantMoreDetails = ({ navigation, route }) => {
                         }}>
 
                         {/* <Spacer paddingT={myHeight(3)} /> */}
-                        <Image
+                        {/* <Image
                             style={{
                                 width: myHeight(12),
                                 height: myHeight(12),
@@ -581,7 +599,23 @@ export const RestaurantMoreDetails = ({ navigation, route }) => {
                                 backgroundColor: myColors.background,
                             }}
                             source={restaurant.icon}
-                        />
+                        /> */}
+                        <View
+                            style={{
+                                width: myHeight(12),
+                                height: myHeight(12),
+                                borderRadius: myHeight(10),
+                                borderWidth: myHeight(0.15),
+                                marginTop: -myHeight(5),
+                                borderColor: myColors.primaryT,
+                                alignSelf: 'center',
+                                overflow: 'hidden',
+                                backgroundColor: myColors.background
+                            }}
+                        >
+                            <ImageUri width={'100%'} height={'100%'} resizeMode='cover' uri={restaurant.icon} />
+
+                        </View>
                         <Spacer paddingT={myHeight(0.5)} />
                         <Text
                             numberOfLines={1}

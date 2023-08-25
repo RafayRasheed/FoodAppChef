@@ -198,10 +198,11 @@ export const ItemEdit = ({ navigation, route }) => {
                 city: profile.city,
                 image: image,
                 rating: item.rating ? item.rating : 0,
+                ratingTotal: item.ratingTotal ? item.ratingTotal : 0,
                 noOfRatings: item.noOfRatings ? item.noOfRatings : 0,
                 options: options ? options : [],
                 subCatName: selectSubCat,
-                catName: selectCat
+                catName: selectCat,
             }
             const isCatExists = newFoodCat.findIndex(it => (it.name == selectSubCat))
 

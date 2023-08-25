@@ -10,6 +10,7 @@ import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 import { useSelector, useDispatch } from 'react-redux'
 import { addCart, removeItemCart } from '../../redux/cart_reducer';
 import { addFavoriteItem, removeFavoriteItem } from '../../redux/favorite_reducer';
+import { ImageUri } from '../common/image_uri';
 
 export const ItemDetails = ({ navigation, route }) => {
     const { item } = route.params;
@@ -148,7 +149,7 @@ export const ItemDetails = ({ navigation, route }) => {
                     </TouchableOpacity>
 
                     {/* Heart */}
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         style={{
                             backgroundColor: myColors.background,
                             padding: myHeight(1),
@@ -164,7 +165,7 @@ export const ItemDetails = ({ navigation, route }) => {
                         }}
 
                             source={isFav ? require('../assets/home_main/home/heart.png') : require('../assets/home_main/home/heart_o.png')} />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
 
                 </View>
 
@@ -180,13 +181,8 @@ export const ItemDetails = ({ navigation, route }) => {
                             marginTop: StatusBar.currentHeight + myHeight(1.5)
                         }}>
 
-                            <Image style={{
-                                height: myHeight(22),
-                                width: myHeight(22),
-                                resizeMode: 'cover',
-                            }}
-                                source={item?.images[0]}
-                            />
+                            <ImageUri width={myHeight(22)} height={myHeight(22)} resizeMode='cover' borderRadius={5000} uri={item.image} />
+
                         </View>
 
                         {/* Name */}
@@ -276,7 +272,7 @@ export const ItemDetails = ({ navigation, route }) => {
 
                                 <Spacer paddingEnd={myWidth(5)} />
                                 {/* Rate us */}
-                                <TouchableOpacity activeOpacity={0.8} onPress={() => setRatinModal(true)}>
+                                {/* <TouchableOpacity activeOpacity={0.8} onPress={() => setRatinModal(true)}>
                                     <Text
                                         numberOfLines={2}
                                         style={[
@@ -287,35 +283,38 @@ export const ItemDetails = ({ navigation, route }) => {
                                                 color: myColors.primaryT,
                                             },
                                         ]}>Rate Us!</Text>
-                                </TouchableOpacity>
+                                </TouchableOpacity> */}
 
                             </View>
                         </View>
+                        {item.description &&
+                            <View>
+                                <Spacer paddingT={myHeight(1.3)} />
+                                <Text
+                                    style={[
+                                        styles.textCommon,
+                                        {
+                                            fontSize: myFontSize.body3,
+                                            fontFamily: myFonts.heading,
+                                            color: myColors.text,
+                                        },
+                                    ]}>Details</Text>
 
-                        <Spacer paddingT={myHeight(1.3)} />
-                        <Text
-                            style={[
-                                styles.textCommon,
-                                {
-                                    fontSize: myFontSize.body3,
-                                    fontFamily: myFonts.heading,
-                                    color: myColors.text,
-                                },
-                            ]}>Details</Text>
-
-                        <Spacer paddingT={myHeight(0.3)} />
-                        {/* Description */}
-                        <Text
-                            style={[
-                                styles.textCommon,
-                                {
-                                    fontSize: myFontSize.body2,
-                                    fontFamily: myFonts.bodyBold,
-                                    color: myColors.textL4,
-                                },
-                            ]}>
-                            {item.description}
-                        </Text>
+                                <Spacer paddingT={myHeight(0.3)} />
+                                {/* Description */}
+                                <Text
+                                    style={[
+                                        styles.textCommon,
+                                        {
+                                            fontSize: myFontSize.body2,
+                                            fontFamily: myFonts.bodyBold,
+                                            color: myColors.textL4,
+                                        },
+                                    ]}>
+                                    {item.description}
+                                </Text>
+                            </View>
+                        }
 
                         <Spacer paddingT={myHeight(2.5)} />
 
@@ -338,13 +337,9 @@ export const ItemDetails = ({ navigation, route }) => {
                                 borderRadius: myHeight(60), overflow: 'hidden',
                                 borderWidth: myHeight(0.15), borderColor: myColors.offColor
                             }}>
-                                <Image style={{
-                                    height: myHeight(6),
-                                    width: myHeight(6),
-                                    resizeMode: 'cover',
-                                }}
-                                    source={restaurant?.images[0]}
-                                />
+
+                                <ImageUri width={myHeight(6)} height={myHeight(6)} resizeMode='cover' uri={restaurant.icon} borderRadius={5000} />
+
                             </View>
 
                             {/* Details */}
@@ -457,9 +452,10 @@ export const ItemDetails = ({ navigation, route }) => {
                                                     <Spacer paddingT={myHeight(1)} />
 
                                                     {/* List name & circle */}
-                                                    <TouchableOpacity activeOpacity={0.8} style={{
-                                                        flexDirection: 'row', alignItems: 'center'
-                                                    }}
+                                                    <TouchableOpacity disabled
+                                                        activeOpacity={0.8} style={{
+                                                            flexDirection: 'row', alignItems: 'center'
+                                                        }}
                                                         onPress={() => {
 
                                                             if (selectItems[option.name]) {
@@ -509,109 +505,6 @@ export const ItemDetails = ({ navigation, route }) => {
                 </ScrollView>
 
 
-                {/* Cart */}
-                <View style={{ backgroundColor: myColors.background }}>
-
-                    <View style={{
-                        flexDirection: 'row', alignItems: 'center', backgroundColor: myColors.background,
-                        paddingVertical: myHeight(1), paddingHorizontal: myWidth(3),
-                        borderWidth: myHeight(0.1), borderColor: myColors.text3, justifyContent: 'space-between',
-                        borderTopRightRadius: myWidth(4), borderTopLeftRadius: myWidth(4)
-                    }}>
-                        {/* Price */}
-                        <View>
-                            <Text
-                                style={[
-                                    styles.textCommon,
-                                    {
-                                        fontSize: myFontSize.xxSmall,
-                                        fontFamily: myFonts.bodyBold,
-                                        color: myColors.textL4,
-                                    },
-                                ]}>Total Price</Text>
-                            <Text
-                                style={[
-                                    styles.textCommon,
-                                    {
-                                        fontSize: myFontSize.xBody,
-                                        fontFamily: myFonts.heading,
-                                        color: myColors.text,
-                                    },
-                                ]}>Rs  <Text style={{
-                                    fontSize: myFontSize.medium2,
-                                }}>{price * count}</Text></Text>
-                        </View>
-
-
-                        {/* Plus Minus & Add To Cart */}
-                        <View style={{
-                            flexDirection: 'row', alignItems: 'center',
-                        }}>
-                            {/* Plus Minus */}
-                            <View style={{
-                                flexDirection: 'row', alignItems: 'center',
-                            }}>
-                                {/* minus */}
-                                <TouchableOpacity activeOpacity={0.75}
-                                    onPress={() => {
-                                        if (count > 1) {
-                                            setCount(count - 1)
-                                        }
-                                    }}>
-                                    <Image style={{
-                                        height: myHeight(4.1),
-                                        width: myHeight(4.1),
-                                        resizeMode: 'contain',
-                                        marginTop: myHeight(0.7),
-
-                                    }} source={require('../assets/home_main/home/minusBtn.png')} />
-                                </TouchableOpacity>
-
-                                <View style={{ minWidth: myWidth(11), alignItems: 'center' }}>
-
-                                    {/* count */}
-                                    <Text numberOfLines={1} style={[styles.textCommon, {
-                                        fontSize: myFontSize.medium,
-                                        fontFamily: myFonts.bodyBold,
-                                    }]}>{count}</Text>
-                                </View>
-
-                                {/* plus */}
-                                <TouchableOpacity activeOpacity={0.75} onPress={() => setCount(count + 1)}>
-                                    <Image style={{
-                                        height: myHeight(4.25),
-                                        width: myHeight(4.25),
-                                        marginTop: myHeight(0.7),
-                                        resizeMode: 'contain',
-                                    }} source={require('../assets/home_main/home/plusBtn.png')} />
-                                </TouchableOpacity>
-                            </View>
-
-                            <Spacer paddingEnd={myWidth(5)} />
-                            {/* Add To Cart */}
-                            <TouchableOpacity activeOpacity={0.85} onPress={onAddToCart}
-                                style={{
-                                    paddingHorizontal: myWidth(4),
-                                    paddingVertical: myHeight(1.2),
-                                    backgroundColor: myColors.black,
-                                    borderRadius: myWidth(100)
-
-                                }}>
-                                <Text
-                                    style={[
-                                        styles.textCommon,
-                                        {
-                                            fontSize: myFontSize.body,
-                                            fontFamily: myFonts.heading,
-                                            color: myColors.background,
-                                        },
-                                    ]}>Add To Cart</Text>
-                            </TouchableOpacity>
-                        </View>
-
-                    </View>
-
-                </View>
 
             </View>
 
@@ -632,20 +525,22 @@ export const ItemDetails = ({ navigation, route }) => {
                             backgroundColor: myColors.background, borderRadius: myWidth(6)
                         }}>
 
-                        <Image
+                        <View
                             style={{
                                 width: myHeight(12),
                                 height: myHeight(12),
-                                resizeMode: 'contain',
                                 borderRadius: myHeight(10),
                                 borderWidth: myHeight(0.15),
                                 marginTop: -myHeight(5),
                                 borderColor: myColors.primaryT,
                                 alignSelf: 'center',
+                                overflow: 'hidden',
                                 backgroundColor: myColors.background
                             }}
-                            source={item.images[0]}
-                        />
+                        >
+                            <ImageUri width={'100%'} height={'100%'} resizeMode='cover' uri={item.image.toString()} />
+
+                        </View>
                         <Spacer paddingT={myHeight(1)} />
                         <Text
                             numberOfLines={1}

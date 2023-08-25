@@ -16,6 +16,7 @@ import { ProfileInfo } from "./profile/profile_info"
 import { RestaurantEdit } from "./profile/restaurant_edit"
 import { RestaurantDetail } from "./home/restaurant_detail_screen"
 import { ItemEdit } from "./profile/item_edit"
+import { OrderDetails } from "./orders/order_detail_screen"
 
 const AppTAB = createStackNavigator()
 
@@ -47,6 +48,9 @@ export const AppNavigator = () => {
                 <AppTAB.Screen component={ProfileInfo} name="ProfileInfo" />
                 <AppTAB.Screen component={RestaurantEdit} name="RestaurantEdit" />
                 <AppTAB.Screen component={ItemEdit} name="ItemEdit" />
+
+                <AppTAB.Screen component={OrderDetails} name="OrderDetails" />
+
 
             </AppTAB.Navigator>
         </NavigationContainer>

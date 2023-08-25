@@ -9,6 +9,7 @@ import { deleteLogin } from "../functions/storageMMKV";
 import { useSelector } from "react-redux";
 import { ProfileNavigator } from "../profile/profile_navigator";
 import { Alert } from "../alert/alert_screen";
+import { OrderScreen } from "../orders/orders_screen";
 
 const Tab = createBottomTabNavigator()
 
@@ -25,15 +26,24 @@ const Icons = {
         image: require('../assets/home_main/home/navigator/account.png'),
         style: { width: myWidth(6.2), height: myHeight(2.68) }
     },
-    ALERT: {
-        image: require('../assets/home_main/home/navigator/bell.png'),
-        style: { width: myHeight(3), height: myHeight(3) }
-    },
+
 }
 
 
 const screenOptions = ({ navigator, route }) => {
     const { cart } = useSelector(state => state.cart)
+    const { progress, pending } = useSelector(state => state.orders)
+    let ordLen = 0
+    if (progress?.length) {
+        ordLen += progress.length
+    }
+    if (pending?.length) {
+        ordLen += pending.length
+    }
+    console.log(ordLen)
+
+
+
     const name = route.name
     return {
         headerShown: false,
@@ -55,12 +65,12 @@ const screenOptions = ({ navigator, route }) => {
                         <Image style={[Icons[name].style, { tintColor: color, resizeMode: 'contain', }]}
                             source={Icons[name].image} />
                         {
-                            cart.length ?
+                            ordLen ?
                                 <View style={{
                                     position: 'absolute', top: -myHeight(0.6), right: -myHeight(1.4), backgroundColor: myColors.red, borderRadius: 100,
                                     paddingVertical: myHeight(0.35), paddingHorizontal: myHeight(1)
                                 }}>
-                                    <Text style={[styles.textCommon, { fontSize: myFontSize.tiny, fontFamily: myFonts.bodyBold, color: myColors.background }]}>{cart.length}</Text>
+                                    <Text style={[styles.textCommon, { fontSize: myFontSize.tiny, fontFamily: myFonts.bodyBold, color: myColors.background }]}>{ordLen}</Text>
                                 </View>
                                 : null
                         }
@@ -108,8 +118,7 @@ export const HomeBottomNavigator = ({ route, navigation }) => {
                 initialRouteName="HOME"
             >
                 <Tab.Screen name="HOME" component={HomeNavigator} />
-                <Tab.Screen name="ORDERS" component={Xr} />
-                <Tab.Screen name="ALERT" component={Alert} />
+                <Tab.Screen name="ORDERS" component={OrderScreen} />
                 <Tab.Screen name="PROFILE" component={ProfileNavigator} />
 
             </Tab.Navigator>

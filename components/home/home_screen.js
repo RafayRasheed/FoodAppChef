@@ -19,6 +19,8 @@ import firestore from '@react-native-firebase/firestore';
 import { RestaurantInfoFull } from './home.component/restaurant_info_full';
 import { setMainCategories } from '../../redux/category_reducer';
 import { setProfile } from '../../redux/profile_reducer';
+import { setHistoryOrderse, setPendingOrderse, setProgressOrderse } from '../../redux/order_reducer';
+import database from '@react-native-firebase/database';
 
 if (!ios && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true)
@@ -61,22 +63,64 @@ export const HomeScreen = ({ navigation }) => {
         getCategories()
     }, [])
 
-    // firestore().collection('users').doc(profile.uid).get()
-    //     .then((data) => {
-    //         const all = data.data()
-    //         const favoriteRes = all.favoriteRes
-    //         const favoriteItem = all.favoriteItem
+    useEffect(() => {
+        database()
+            .ref(`/orders/${profile.uid}`)
+            .on('value', snapshot => {
+                let pending = []
+                let progress = []
+                let history = []
+                snapshot.forEach(documentSnapshot1 => {
+                    const order = documentSnapshot1.val()
+                    if (order.status == -1 || order.status == 100 || order.status == -2) {
+                        history.push(order)
+                    }
+                    else if (order.status == 0) {
+                        pending.push(order)
+                    }
+                    else {
+                        progress.push(order)
+                    }
 
-    //         if (favoriteRes && favoriteRes.length) {
-    //             dispatch(setFavoriteRest(favoriteRes))
-    //         }
-    //         if (favoriteItem && favoriteItem.length) {
-    //             dispatch(setFavoriteItem(favoriteItem))
-    //         }
-    //     }).catch(()=>{
-    //         console.log('Error while ge')
-    //     })
-    // dispatch(setCart(getCartLocal()))
+                });
+                pending.sort((a, b) => b.dateInt - a.dateInt);
+                progress.sort((a, b) => b.dateInt - a.dateInt);
+                history.sort((a, b) => b.dateInt - a.dateInt);
+                dispatch(setPendingOrderse(pending))
+                dispatch(setHistoryOrderse(history))
+                dispatch(setProgressOrderse(progress))
+                console.log('User data: ', pending.length, progress.length, history.length);
+            });
+        // const subscriber = firestore().collection('orders').doc(profile.uid).collection('orders')
+        //     .onSnapshot(documentSnapshot => {
+        //         let pending = []
+        //         let progress = []
+        //         let history = []
+        //         documentSnapshot.forEach(documentSnapshot1 => {
+        //             const order = documentSnapshot1.data()
+        //             if (order.status == -1 || order.status == 100 || order.status == -2) {
+        //                 history.push(order)
+        //             }
+        //             else if (order.status == 0) {
+        //                 pending.push(order)
+        //             }
+        //             else {
+        //                 progress.push(order)
+        //             }
+
+        //         });
+        //         pending.sort((a, b) => b.dateInt - a.dateInt);
+        //         progress.sort((a, b) => b.dateInt - a.dateInt);
+        //         history.sort((a, b) => b.dateInt - a.dateInt);
+        //         dispatch(setPendingOrderse(pending))
+        //         dispatch(setHistoryOrderse(history))
+        //         dispatch(setProgressOrderse(progress))
+        //     });
+
+        // // Stop listening for updates when no longer required
+        // return () => subscriber();
+        console.log(JSON.stringify(profile))
+    }, []);
 
     return (
 

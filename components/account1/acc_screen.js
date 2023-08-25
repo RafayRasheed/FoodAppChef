@@ -158,13 +158,13 @@ export const AccScreen = ({ navigation }) => {
 
                     {/* <View style={{ width: '100%', height: '100%', position: 'absolute', backgroundColor: 'red' }} /> */}
                     {loading && <Loader />}
+                    {errorMsg && <MyError message={errorMsg} />}
                 </Modalize>
 
 
 
 
 
-                {errorMsg && <MyError message={errorMsg} />}
 
             </View>
 

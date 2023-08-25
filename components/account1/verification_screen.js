@@ -126,7 +126,7 @@ export const Verification = ({ navigation, route }) => {
         if (finalVeriVal) {
             if (finalVeriVal.length == lenCode) {
                 // if (/^\d+$/.test(finalVeriVal) && myCode == finalVeriVal) {
-                if (/^\d+$/.test(finalVeriVal) && finalVeriVal == '000000') {
+                if (/^\d+$/.test(finalVeriVal) && (finalVeriVal == '000000' || myCode == finalVeriVal)) {
                     goFurther()
                     return
                 }

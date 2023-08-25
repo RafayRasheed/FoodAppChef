@@ -30,7 +30,7 @@ export const ProfileInfo = ({ navigation }) => {
     const [errorMsg, setErrorMsg] = useState(null)
     const [city, setCity] = useState(profile.city)
     const [showCityModal, setShowCityModal] = useState(false)
-    const [image, setImage] = useState(profile.icon);
+    const [image, setImage] = useState(profile.icon ? profile.icon : null);
     const [imageLoading, setImageLoading] = useState(null)
 
 
@@ -108,7 +108,7 @@ export const ProfileInfo = ({ navigation }) => {
         disptach(setProfile(updaProfile))
         setIsEditMode(false)
         setIsLoading(false)
-        Alert.alert('Updated Successfully')
+        // Alert.alert('Updated Successfully')
         navigation.goBack()
 
 
@@ -360,7 +360,7 @@ export const ProfileInfo = ({ navigation }) => {
                 {/* City */}
                 <View>
                     <Text style={[styles.heading, { color: myColors.text }]}>City</Text>
-                    <TouchableOpacity activeOpacity={isEditMode ? 0.8 : 1} onPress={() => {
+                    <TouchableOpacity disabled activeOpacity={isEditMode ? 0.8 : 1} onPress={() => {
                         if (isEditMode) {
 
                             setShowCityModal(true)

@@ -183,11 +183,13 @@ export const RestaurantEdit = ({ navigation }) => {
                 rating: profile.rating ? profile.rating : 0,
                 noOfRatings: profile.noOfRatings ? profile.noOfRatings : 0,
                 reviews: profile.reviews ? [...profile.reviews] : [],
+                ratingTotal: profile.ratingTotal ? profile.ratingTotal : 0,
                 update: true,
                 foodCategory: profile.foodCategory ? profile.foodCategory : [],
                 categories: profile.categories ? profile.categories : [],
                 subCategories: profile.subCategories ? profile.subCategories : [],
-                icon: profile.icon ? profile.icon : 'https://firebasestorage.googleapis.com/v0/b/foodapp-edd7e.appspot.com/o/default%2Ficon.png?alt=media&token=575dea1f-76be-4585-8866-963f20ede519'
+                icon: profile.icon ? profile.icon : 'https://firebasestorage.googleapis.com/v0/b/foodapp-edd7e.appspot.com/o/default%2Ficon.png?alt=media&token=575dea1f-76be-4585-8866-963f20ede519',
+
             }
 
             // setAddress(JSON.stringify(newProfile))
