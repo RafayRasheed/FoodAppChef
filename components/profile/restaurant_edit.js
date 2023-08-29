@@ -534,7 +534,7 @@ export const RestaurantEdit = ({ navigation }) => {
                 {/* Button */}
                 <TouchableOpacity activeOpacity={0.7}
                     onPress={() => {
-                        const copy = timmings
+                        const copy = [...timmings]
                         copy[i].open = !single.open
 
                         setTimmings(copy)
