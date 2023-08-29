@@ -200,7 +200,6 @@ export const RestaurantEdit = ({ navigation }) => {
                     setIsLoading(false)
                     // setIsEditMode(false)
                     const msg = profile.update ? 'Updated Successfully' : 'Add Successfully'
-                    Alert.alert(msg)
                     navigation.goBack()
 
 
